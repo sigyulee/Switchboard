@@ -7,8 +7,10 @@ bash scripts/check.sh
 ```
 
 This runs source and license validation, localization checks, Swift formatting
-lint, Swift regression tests, and a C queue stress test under AddressSanitizer and
-UndefinedBehaviorSanitizer. Test audio is generated in temporary directories.
+lint, Swift regression tests, and C queue and driver property tests. The C tests
+run under AddressSanitizer and UndefinedBehaviorSanitizer; Swift concurrency and
+the C tests also run separately under ThreadSanitizer. Test audio is generated in
+temporary directories. These checks do not install drivers or open audio devices.
 
 The Swift test executable is `BridgeChecks`. Run it separately with:
 
@@ -16,8 +18,21 @@ The Swift test executable is `BridgeChecks`. Run it separately with:
 bash scripts/swift.sh run --configuration debug BridgeChecks
 ```
 
+Run sanitizer checks separately with:
+
+```sh
+bash scripts/check-queue.sh
+bash scripts/check-driver.sh
+bash scripts/check-swift-concurrency.sh
+bash scripts/check-queue.sh thread
+bash scripts/check-driver.sh thread
+```
+
 The GitHub Actions workflow runs source, localization, and shell syntax checks on
-Linux. Swift and audio tests run on macOS.
+Linux. The `xcode-27` macOS jobs build the release app and both drivers, run Swift
+regression checks, and run ASan/UBSan and TSan in separate jobs. Builds and tests
+use the standard Apple Silicon runner; they do not install drivers or upload
+binaries. Swift TSan products use a separate `.build/thread-sanitizer` directory.
 
 ## Audio and device scenarios
 

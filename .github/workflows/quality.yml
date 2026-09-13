@@ -9,6 +9,10 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: quality-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   source-validation:
     name: Source validation
@@ -21,17 +25,63 @@ jobs:
           persist-credentials: false
       - name: Validate public source, Python syntax, and licenses
         run: python3 scripts/check-source.py
+      - name: Verify pinned driver patches
+        run: python3 scripts/prepare-driver.py --check
       - name: Validate shell syntax
         shell: bash
         run: |
           for script in scripts/*.sh; do
             bash -n "$script"
           done
-      - name: Validate localization sources when present
-        shell: bash
+      - name: Validate localization sources
+        run: python3 scripts/compile-localizations.py --check
+
+  macos-build:
+    name: macOS build and Swift regression checks
+    runs-on: xcode-27
+    timeout-minutes: 20
+    steps:
+      - name: Check out source
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - name: Validate toolchain
+        run: bash scripts/check-toolchain.sh
+      - name: Lint Swift
         run: |
-          if [[ -f scripts/compile-localizations.py ]]; then
-            python3 scripts/compile-localizations.py --check
-          fi
-      # Swift builds, sanitizer execution, and audio checks require the supported
-      # Apple Silicon/macOS toolchain and are not performed by this Linux job.
+          xcrun swift-format lint --strict --configuration .swift-format --recursive \
+            Package.swift Sources Tests Installer
+      - name: Build release app and both drivers
+        run: bash scripts/build-app.sh release
+      - name: Run Swift regression checks
+        run: bash scripts/swift.sh run --configuration release --skip-build BridgeChecks
+
+  address-sanitizers:
+    name: C AddressSanitizer and UndefinedBehaviorSanitizer
+    runs-on: xcode-27
+    timeout-minutes: 10
+    steps:
+      - name: Check out source
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - name: Check concurrent audio queue
+        run: bash scripts/check-queue.sh
+      - name: Check driver property callbacks
+        run: bash scripts/check-driver.sh
+
+  thread-sanitizer:
+    name: Swift and C ThreadSanitizer
+    runs-on: xcode-27
+    timeout-minutes: 20
+    steps:
+      - name: Check out source
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - name: Check Swift recording concurrency
+        run: bash scripts/check-swift-concurrency.sh
+      - name: Check concurrent audio queue
+        run: bash scripts/check-queue.sh thread
+      - name: Check concurrent driver property callbacks
+        run: bash scripts/check-driver.sh thread
