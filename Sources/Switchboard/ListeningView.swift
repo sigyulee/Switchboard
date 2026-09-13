@@ -44,7 +44,7 @@ struct ListeningView: View {
                 Text("\(Int(value.wrappedValue * 100))%").font(.system(size: 14).monospacedDigit())
                     .foregroundStyle(.secondary)
             }
-            Slider(value: value, in: 0...1).controlSize(.small).accessibilityLabel(
+            Slider(value: value, in: 0...1).controlSize(.regular).accessibilityLabel(
                 strings(.monitorVolume, title))
         }
     }

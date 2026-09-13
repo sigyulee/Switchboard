@@ -8,15 +8,9 @@ struct SetupView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 22) {
             HStack {
-                VStack(alignment: .leading, spacing: 6) {
-                    Text(strings(.setupTitle)).font(.system(size: 28, weight: .semibold))
-                }
+                Text(strings(.setupTitle)).font(.system(size: 28, weight: .semibold))
                 Spacer()
-                Button {
-                    dismiss()
-                } label: {
-                    Image(systemName: "xmark")
-                }.buttonStyle(.plain).accessibilityLabel(strings(.actionClose))
+                SheetCloseButton { dismiss() }
             }
             SetupRow(
                 number: 1, title: strings(.setupDevices), detail: "Phone → Agent\nChrome → Phone",
@@ -61,13 +55,30 @@ struct SetupView: View {
                     Button(strings(.setupSystemSettings)) { model.openAudioPrivacy() }.disabled(model.preview)
                 }
             }
-            Divider()
-            HStack {
-                Spacer()
-                Button(strings(.actionDone)) { dismiss() }.buttonStyle(.borderedProminent).keyboardShortcut(
-                    .defaultAction)
-            }
         }
+    }
+}
+
+private struct SheetCloseButton: View {
+    @Environment(\.appStrings) private var strings
+    @ViewState private var hovering = false
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            Image(systemName: "xmark")
+                .font(.system(size: 15, weight: .medium))
+                .frame(width: 32, height: 32)
+                .background(
+                    hovering ? Color.primary.opacity(0.08) : .clear,
+                    in: RoundedRectangle(cornerRadius: 8)
+                )
+                .contentShape(RoundedRectangle(cornerRadius: 8))
+        }
+        .buttonStyle(.plain)
+        .keyboardShortcut(.cancelAction)
+        .accessibilityLabel(strings(.actionClose))
+        .onHover { hovering = $0 }
     }
 }
 
@@ -79,7 +90,7 @@ struct SetupRow<Control: View>: View {
     let ready: Bool
     @ViewBuilder var control: Control
     var body: some View {
-        HStack(alignment: .center, spacing: 12) {
+        HStack(alignment: .center, spacing: 16) {
             ZStack {
                 Circle().fill(ready ? Color.green.opacity(0.12) : Color.primary.opacity(0.06))
                 if ready {
@@ -88,9 +99,9 @@ struct SetupRow<Control: View>: View {
                     Text("\(number)").foregroundStyle(.secondary)
                 }
             }.font(.system(size: 14, weight: .semibold)).frame(width: 28, height: 28)
-            VStack(alignment: .leading, spacing: 4) {
+            VStack(alignment: .leading, spacing: 8) {
                 Text(title).font(.system(size: 16, weight: .medium))
-                Text(detail).font(.system(size: 14)).foregroundStyle(.secondary).fixedSize(
+                Text(detail).font(.system(size: 14)).lineSpacing(2).foregroundStyle(.secondary).fixedSize(
                     horizontal: false, vertical: true)
             }
             Spacer(minLength: 12)

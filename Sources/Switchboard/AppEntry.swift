@@ -53,6 +53,10 @@ import SwiftUI
         .defaultSize(width: 780, height: 720)
         .windowResizability(.contentMinSize)
         .commands {
+            CommandGroup(after: .textEditing) {
+                Button(strings(.librarySearch)) { model.findRecordings() }
+                    .keyboardShortcut("f", modifiers: .command)
+            }
             CommandGroup(after: .newItem) {
                 Button(model.isRecording ? strings(.actionStopRecording) : strings(.actionStartRecording)) {
                     if model.isRecording {

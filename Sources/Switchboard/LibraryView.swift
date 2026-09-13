@@ -7,6 +7,7 @@ struct LibraryView: View {
     @Environment(\.appStrings) private var strings
     @Bindable var model: AppModel
     @ViewState private var query = ""
+    @FocusState private var searchFocused: Bool
     private var items: [RecordingItem] {
         query.isEmpty
             ? model.recordings
@@ -18,8 +19,21 @@ struct LibraryView: View {
                 Text(strings(.navigationRecordings)).font(.system(size: 20, weight: .semibold))
                 Text("\(model.recordings.count)").foregroundStyle(.secondary)
                 Spacer()
-                TextField(strings(.librarySearch), text: $query).textFieldStyle(.roundedBorder).frame(
-                    width: 190)
+                HStack(spacing: 8) {
+                    Image(systemName: "magnifyingglass")
+                        .font(.system(size: 14)).foregroundStyle(.secondary).accessibilityHidden(true)
+                    TextField(strings(.librarySearch), text: $query)
+                        .textFieldStyle(.plain).font(.system(size: 15))
+                        .focused($searchFocused)
+                        .accessibilityLabel(strings(.librarySearch))
+                }
+                .padding(.horizontal, 10).frame(width: 230, height: 34)
+                .background(Color(nsColor: .textBackgroundColor), in: RoundedRectangle(cornerRadius: 8))
+                .overlay {
+                    RoundedRectangle(cornerRadius: 8).strokeBorder(
+                        searchFocused ? Color.accentColor : Color.primary.opacity(0.12),
+                        lineWidth: searchFocused ? 2 : 1)
+                }
             }.padding(.horizontal, 24).padding(.vertical, 16)
             if items.isEmpty {
                 VStack(spacing: 12) {
@@ -56,7 +70,15 @@ struct LibraryView: View {
                 }
             }
         }
+        .task(id: model.recordingSearchRequested) {
+            guard model.recordingSearchRequested else { return }
+            await Task.yield()
+            guard !Task.isCancelled, model.recordingSearchRequested else { return }
+            searchFocused = true
+            model.recordingSearchRequested = false
+        }
     }
+
     @ViewBuilder private func detail(_ item: RecordingItem) -> some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {

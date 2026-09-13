@@ -41,6 +41,7 @@ import RecorderKit
     }
     var finalizing = Set<URL>()
     var page = "session"
+    var recordingSearchRequested = false
     var statusBarRefresh: (() -> Void)?
     var openMainWindow: (() -> Void)?
     var showSetup = false
@@ -121,6 +122,12 @@ import RecorderKit
             ?? music.appendingPathComponent("Switchboard/Recordings")
         if preview { loadPreview() }
     }
+    func findRecordings() {
+        guard language != nil, !showSettings, !showSetup else { return }
+        page = "library"
+        recordingSearchRequested = true
+    }
+
     func boot() {
         guard loop == nil, !preview, language != nil else { return }
         refresh()
