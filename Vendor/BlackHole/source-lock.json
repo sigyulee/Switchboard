@@ -1,0 +1,9 @@
+{
+  "repository": "https://github.com/ExistentialAudio/BlackHole",
+  "commit": "ffcb74433fbcf8c8ca5c736677c1a4864384dc09",
+  "files": {
+    "BlackHole.c": "05f1fa61e2502072ddbc797717713b20e43e2e55e08d445312aeb55dad879c7b",
+    "BlackHole.plist": "329be16034b1a58b05b8a1377759f1e4bf7fd410f886c5ef513bf667a99fd966",
+    "LICENSE": "d5134ba41d942612bdf5ab79b32b3ddc2458f55e16437390bd81be8f2e0811e0"
+  }
+}

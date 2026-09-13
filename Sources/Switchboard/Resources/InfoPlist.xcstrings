@@ -1,0 +1,54 @@
+{
+  "sourceLanguage": "en",
+  "strings": {
+    "NSMicrophoneUsageDescription": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Switchboard receives Phone audio from a virtual device to send to the Agent, monitor, and record."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Phone의 음성을 가상 오디오 장치에서 받아 Agent에 전달하고 듣기·녹음에 사용합니다."
+          }
+        }
+      }
+    },
+    "NSAudioCaptureUsageDescription": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Switchboard sends Agent audio playing in Chrome to the call and records it."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chrome에서 재생하는 Agent 음성을 통화 상대에게 전달하고 녹음합니다."
+          }
+        }
+      }
+    },
+    "NSAppleEventsUsageDescription": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Switchboard requests administrator approval to install its audio drivers."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "오디오 드라이버를 설치할 때 관리자 승인을 요청합니다."
+          }
+        }
+      }
+    }
+  },
+  "version": "1.0"
+}
