@@ -1,0 +1,129 @@
+--- a/BlackHole.c
++++ b/BlackHole.c
+@@ -1328,6 +1328,11 @@
+ 	FailWithAction(inAddress == NULL, theAnswer = kAudioHardwareIllegalOperationError, Done, "BlackHole_GetPlugInPropertyDataSize: no address");
+ 	FailWithAction(outDataSize == NULL, theAnswer = kAudioHardwareIllegalOperationError, Done, "BlackHole_GetPlugInPropertyDataSize: no place to put the return value");
+ 	FailWithAction(inObjectID != kObjectID_PlugIn, theAnswer = kAudioHardwareBadObjectError, Done, "BlackHole_GetPlugInPropertyDataSize: not the plug-in object");
++
++	//	Acquisition changes on the property setter thread. Use one consistent snapshot.
++	pthread_mutex_lock(&gPlugIn_StateMutex);
++	Boolean boxAcquired = gBox_Acquired;
++	pthread_mutex_unlock(&gPlugIn_StateMutex);
+ 	
+ 	//	Note that for each object, this driver implements all the required properties plus a few
+ 	//	extras that are useful but not required. There is more detailed commentary about each
+@@ -1351,9 +1356,9 @@
+ 			break;
+ 			
+ 		case kAudioObjectPropertyOwnedObjects:
+-			if(gBox_Acquired)
+-			{
+-				*outDataSize = 2 * sizeof(AudioClassID);
++			if(boxAcquired)
++			{
++				*outDataSize = 3 * sizeof(AudioObjectID);
+ 			}
+ 			else
+ 			{
+@@ -1370,7 +1375,7 @@
+ 			break;
+ 			
+ 		case kAudioPlugInPropertyDeviceList:
+-			if(gBox_Acquired)
++			if(boxAcquired)
+ 			{
+ 				*outDataSize = sizeof(AudioClassID)*2;
+ 			}
+@@ -1409,8 +1414,14 @@
+ 	FailWithAction(inDriver != gAudioServerPlugInDriverRef, theAnswer = kAudioHardwareBadObjectError, Done, "BlackHole_GetPlugInPropertyData: bad driver reference");
+ 	FailWithAction(inAddress == NULL, theAnswer = kAudioHardwareIllegalOperationError, Done, "BlackHole_GetPlugInPropertyData: no address");
+ 	FailWithAction(outDataSize == NULL, theAnswer = kAudioHardwareIllegalOperationError, Done, "BlackHole_GetPlugInPropertyData: no place to put the return value size");
++	*outDataSize = 0;
+ 	FailWithAction(outData == NULL, theAnswer = kAudioHardwareIllegalOperationError, Done, "BlackHole_GetPlugInPropertyData: no place to put the return value");
+ 	FailWithAction(inObjectID != kObjectID_PlugIn, theAnswer = kAudioHardwareBadObjectError, Done, "BlackHole_GetPlugInPropertyData: not the plug-in object");
++
++	//	Acquisition changes on the property setter thread. Use one consistent snapshot.
++	pthread_mutex_lock(&gPlugIn_StateMutex);
++	Boolean boxAcquired = gBox_Acquired;
++	pthread_mutex_unlock(&gPlugIn_StateMutex);
+ 	
+ 	//	Note that for each object, this driver implements all the required properties plus a few
+ 	//	extras that are useful but not required.
+@@ -1453,21 +1464,24 @@
+ 			//	case, only that number of items will be returned
+ 			theNumberItemsToFetch = inDataSize / sizeof(AudioObjectID);
+ 			
+-			//	Clamp that to the number of boxes this driver implements (which is just 1)
+-			if(theNumberItemsToFetch > (gBox_Acquired ? 2 : 1))
+-			{
+-				theNumberItemsToFetch = (gBox_Acquired ? 2 : 1);
++			//	The plug-in owns the box and, while acquired, both devices.
++			if(theNumberItemsToFetch > (boxAcquired ? 3 : 1))
++			{
++				theNumberItemsToFetch = (boxAcquired ? 3 : 1);
+ 			}
+ 			
+ 			//	Write the devices' object IDs into the return value
++			if(theNumberItemsToFetch > 0)
++			{
++				((AudioObjectID*)outData)[0] = kObjectID_Box;
++			}
+ 			if(theNumberItemsToFetch > 1)
+ 			{
+-				((AudioObjectID*)outData)[0] = kObjectID_Box;
+-				((AudioObjectID*)outData)[0] = kObjectID_Device;
++				((AudioObjectID*)outData)[1] = kObjectID_Device;
+ 			}
+-			else if(theNumberItemsToFetch > 0)
+-			{
+-				((AudioObjectID*)outData)[0] = kObjectID_Box;
++			if(theNumberItemsToFetch > 2)
++			{
++				((AudioObjectID*)outData)[2] = kObjectID_Device2;
+ 			}
+ 			
+ 			//	Return how many bytes we wrote to
+@@ -1503,8 +1517,9 @@
+ 			//	qualifier doesn't match any devices. In such case, kAudioObjectUnknown is
+ 			//	the object ID to return.
+ 			FailWithAction(inDataSize < sizeof(AudioObjectID), theAnswer = kAudioHardwareBadPropertySizeError, Done, "BlackHole_GetPlugInPropertyData: not enough space for the return value of kAudioPlugInPropertyTranslateUIDToBox");
+-			FailWithAction(inQualifierDataSize == sizeof(CFStringRef), theAnswer = kAudioHardwareBadPropertySizeError, Done, "BlackHole_GetPlugInPropertyData: the qualifier is the wrong size for kAudioPlugInPropertyTranslateUIDToBox");
++			FailWithAction(inQualifierDataSize != sizeof(CFStringRef), theAnswer = kAudioHardwareBadPropertySizeError, Done, "BlackHole_GetPlugInPropertyData: the qualifier is the wrong size for kAudioPlugInPropertyTranslateUIDToBox");
+ 			FailWithAction(inQualifierData == NULL, theAnswer = kAudioHardwareBadPropertySizeError, Done, "BlackHole_GetPlugInPropertyData: no qualifier for kAudioPlugInPropertyTranslateUIDToBox");
++			FailWithAction(*((CFStringRef*)inQualifierData) == NULL, theAnswer = kAudioHardwareBadPropertySizeError, Done, "BlackHole_GetPlugInPropertyData: null UID qualifier");
+ 
+ 			CFStringRef boxUID = get_box_uid();
+ 
+@@ -1540,9 +1555,9 @@
+ 			
+ 			//	Clamp that to the number of devices this driver implements (which is just 1 if the
+ 			//	box has been acquired)
+-			if(theNumberItemsToFetch > (gBox_Acquired ? 2 : 0))
+-			{
+-				theNumberItemsToFetch = (gBox_Acquired ? 2 : 0);
++			if(theNumberItemsToFetch > (boxAcquired ? 2 : 0))
++			{
++				theNumberItemsToFetch = (boxAcquired ? 2 : 0);
+ 			}
+ 			
+ 			//	Write the devices' object IDs into the return value
+@@ -1567,8 +1582,9 @@
+ 			//	qualifier doesn't match any devices. In such case, kAudioObjectUnknown is
+ 			//	the object ID to return.
+ 			FailWithAction(inDataSize < sizeof(AudioObjectID), theAnswer = kAudioHardwareBadPropertySizeError, Done, "BlackHole_GetPlugInPropertyData: not enough space for the return value of kAudioPlugInPropertyTranslateUIDToDevice");
+-			FailWithAction(inQualifierDataSize == sizeof(CFStringRef), theAnswer = kAudioHardwareBadPropertySizeError, Done, "BlackHole_GetPlugInPropertyData: the qualifier is the wrong size for kAudioPlugInPropertyTranslateUIDToDevice");
++			FailWithAction(inQualifierDataSize != sizeof(CFStringRef), theAnswer = kAudioHardwareBadPropertySizeError, Done, "BlackHole_GetPlugInPropertyData: the qualifier is the wrong size for kAudioPlugInPropertyTranslateUIDToDevice");
+ 			FailWithAction(inQualifierData == NULL, theAnswer = kAudioHardwareBadPropertySizeError, Done, "BlackHole_GetPlugInPropertyData: no qualifier for kAudioPlugInPropertyTranslateUIDToDevice");
++			FailWithAction(*((CFStringRef*)inQualifierData) == NULL, theAnswer = kAudioHardwareBadPropertySizeError, Done, "BlackHole_GetPlugInPropertyData: null UID qualifier");
+             
+             
+ 			
+@@ -1596,7 +1612,7 @@
+ 			//	The resource bundle is a path relative to the path of the plug-in's bundle.
+ 			//	To specify that the plug-in bundle itself should be used, we just return the
+ 			//	empty string.
+-			FailWithAction(inDataSize < sizeof(AudioObjectID), theAnswer = kAudioHardwareBadPropertySizeError, Done, "BlackHole_GetPlugInPropertyData: not enough space for the return value of kAudioPlugInPropertyResourceBundle");
++			FailWithAction(inDataSize < sizeof(CFStringRef), theAnswer = kAudioHardwareBadPropertySizeError, Done, "BlackHole_GetPlugInPropertyData: not enough space for the return value of kAudioPlugInPropertyResourceBundle");
+ 			*((CFStringRef*)outData) = CFSTR("");
+ 			*outDataSize = sizeof(CFStringRef);
+ 			break;

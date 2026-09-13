@@ -2,6 +2,7 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 mkdir -p build/drivers
+python3 scripts/prepare-driver.py build/drivers/BlackHole.c
 build_driver() {
     local role="$1" display="$2" factory="$3"
     local name="MIH${role}"
@@ -17,7 +18,7 @@ build_driver() {
       '-DkManufacturer_Name="Switchboard"' '-DkPlugIn_Icon="DeviceIcon.pdf"' \
       "-DkDriver_Name=\"${name}\"" "-DkDevice_Name=\"${display}\"" \
       "-DkPlugIn_BundleID=\"local.mouthinhands.${role}\"" \
-      Vendor/BlackHole/BlackHole.c -o "$bundle/Contents/MacOS/$name"
+      build/drivers/BlackHole.c -o "$bundle/Contents/MacOS/$name"
     python3 - "$bundle" "$name" "$role" "$factory" "$(cat VERSION)" <<'PY'
 import pathlib,plistlib,sys
 bundle,name,role,factory,version=sys.argv[1:]

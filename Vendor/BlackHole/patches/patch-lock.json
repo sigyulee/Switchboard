@@ -1,0 +1,10 @@
+{
+  "source_sha256": "05f1fa61e2502072ddbc797717713b20e43e2e55e08d445312aeb55dad879c7b",
+  "patches": [
+    {
+      "file": "0001-property-contracts.patch",
+      "sha256": "f9ff8369322b1da88217ff811a4dfb69d75f4cb62df499313ed899084e1569be"
+    }
+  ],
+  "prepared_sha256": "2dd097f85d1782b66de324e5077f0b78bfe8c49b1dd9c42e4113af7f76ce9b2f"
+}

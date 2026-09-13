@@ -14,11 +14,11 @@ ROOT = Path(__file__).resolve().parent.parent
 PUBLIC_DIRECTORIES = ("Sources", "Tests", "Installer", "scripts", "docs", ".github")
 PUBLIC_ROOT_FILES = (
     "CONTRIBUTING.md", "LICENSE", "NOTICE.md", "VERSION",
-    "README.md", "SECURITY.md", "Package.swift", ".gitignore", ".swift-format", ".editorconfig",
+    "README.md", "SECURITY.md", "Package.swift", ".gitignore", ".gitattributes", ".swift-format", ".editorconfig",
 )
 TEXT_SUFFIXES = {
     ".c", ".h", ".swift", ".py", ".sh", ".md", ".txt", ".json", ".toml",
-    ".yml", ".yaml", ".plist", ".xcstrings", ".strings", ".stringsdict",
+    ".yml", ".yaml", ".plist", ".xcstrings", ".strings", ".stringsdict", ".patch",
 }
 AGPL_SHA256 = "0d96a4ff68ad6d4b6f1f30f713b18d5184912ba8dd389f86aa7710db079abcb0"
 BLACKHOLE_REPOSITORY = "https://github.com/ExistentialAudio/BlackHole"
