@@ -13,7 +13,8 @@ struct SetupView: View {
                 SheetCloseButton { dismiss() }
             }
             SetupRow(
-                number: 1, title: strings(.setupDevices), detail: "Phone → Agent\nChrome → Phone",
+                number: 1, title: strings(.setupDevices),
+                detail: "Caller → Switchboard\nSwitchboard → Agent\nAgent → Caller",
                 ready: model.driversReady
             ) {
                 Button(
@@ -41,14 +42,14 @@ struct SetupView: View {
             }
             SetupRow(
                 number: 3, title: strings(.setupChrome), detail: strings(.setupChromeHelp),
-                ready: model.chromeAudioConfirmed
+                ready: model.agentAudioConfirmed
             ) {
                 Button(
                     model.captureAccessRequested ? strings(.setupRequestAgain) : strings(.setupRequestAudio)
-                ) { model.requestChromeAccess() }
+                ) { model.requestAgentAccess() }
                 .disabled(model.preview || model.captureRequestInProgress)
             }
-            if model.captureAccessRequested && !model.chromeAudioConfirmed {
+            if model.captureAccessRequested && !model.agentAudioConfirmed {
                 HStack {
                     Text(strings(.setupPending))
                         .font(.system(size: 14)).foregroundStyle(.secondary)
@@ -132,11 +133,28 @@ struct SettingsView: View {
                 }
             }
             Divider()
-            Text(strings(.settingsFolder)).font(.headline)
+            ApplicationSelectionView(model: model)
+            Divider()
+            Text(strings(.settingsDefaultFolder)).font(.headline)
             Text(model.recordingRoot.path).font(.system(size: 14)).foregroundStyle(.secondary).textSelection(
                 .enabled)
             Button(strings(.settingsChangeFolder)) { model.chooseRecordingFolder() }.disabled(
                 !model.canChangeRecordingFolder)
+            if !model.addedLibraryFolders.isEmpty {
+                ForEach(model.addedLibraryFolders, id: \.self) { folder in
+                    HStack {
+                        Text(folder.path).font(.system(size: 14)).foregroundStyle(.secondary).lineLimit(2)
+                        Spacer()
+                        Button {
+                            model.removeLibraryFolder(folder)
+                        } label: {
+                            Image(systemName: "minus.circle")
+                        }
+                        .buttonStyle(.plain).accessibilityLabel(strings(.settingsRemoveFolder))
+                    }
+                }
+            }
+            Button(strings(.settingsAddFolder)) { model.addLibraryFolder() }.disabled(model.preview)
             Divider()
             LabeledContent(
                 strings(.settingsVersion),
@@ -148,14 +166,15 @@ struct SettingsView: View {
             }
             DisclosureGroup(strings(.settingsDevices)) {
                 VStack(alignment: .leading, spacing: 12) {
-                    DriverStatusRow(name: "Phone → Agent", available: model.callerDevice != nil)
-                    DriverStatusRow(name: "Chrome → Phone", available: model.replyDevice != nil)
+                    DriverStatusRow(name: "Caller → Switchboard", available: model.callerDevice != nil)
+                    DriverStatusRow(name: "Switchboard → Agent", available: model.agentInputDevice != nil)
+                    DriverStatusRow(name: "Agent → Caller", available: model.replyDevice != nil)
                     HStack {
                         Button(strings(.settingsReinstall)) { Task { await model.installDrivers() } }
                         Button(strings(.settingsRemove), role: .destructive) {
                             Task { await model.installDrivers(remove: true) }
                         }
-                    }.disabled(model.preview || model.installing || model.isRecording)
+                    }.disabled(model.preview || model.installing || model.session.active)
                 }.padding(.top, 12)
             }
         }.font(.system(size: 15))

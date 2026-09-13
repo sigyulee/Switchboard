@@ -19,6 +19,13 @@ struct LibraryView: View {
                 Text(strings(.navigationRecordings)).font(.system(size: 20, weight: .semibold))
                 Text("\(model.recordings.count)").foregroundStyle(.secondary)
                 Spacer()
+                if model.storedProcessing.busy {
+                    Button {
+                        Task { await model.storedProcessing.pause() }
+                    } label: {
+                        Label(strings(.actionPause), systemImage: "captions.bubble")
+                    }
+                }
                 HStack(spacing: 8) {
                     Image(systemName: "magnifyingglass")
                         .font(.system(size: 14)).foregroundStyle(.secondary).accessibilityHidden(true)
@@ -70,6 +77,15 @@ struct LibraryView: View {
                 }
             }
         }
+        .sheet(
+            isPresented: Binding(
+                get: { model.storedProcessing.requiredModels != nil },
+                set: { if !$0 { model.storedProcessing.requiredModels = nil } })
+        ) {
+            if let configuration = model.storedProcessing.requiredModels {
+                LanguageModelsView(configuration: configuration)
+            }
+        }
         .task(id: model.recordingSearchRequested) {
             guard model.recordingSearchRequested else { return }
             await Task.yield()
@@ -92,14 +108,15 @@ struct LibraryView: View {
                 .disabled(item.manifest.status == .recording || item.manifest.status == .finalizing)
                 Menu(strings(.librarySources)) {
                     Button(strings(.libraryPlayCaller)) { model.play(item, side: .caller) }
-                    Button(strings(.libraryPlayAgent)) { model.play(item, side: .chrome) }
+                    Button(strings(.libraryPlayAgent)) { model.play(item, side: .agent) }
                 }
                 Menu(strings(.actionExport)) {
                     Button(strings(.libraryExportAll)) { model.exportAll(item) }
                     Divider()
                     Button(strings(.libraryExportMix)) { model.export(item) }
+                    Button(strings(.libraryExportText)) { model.exportTranscript(item) }
                     Button(strings(.libraryExportCaller)) { model.export(item, side: .caller) }
-                    Button(strings(.libraryExportAgent)) { model.export(item, side: .chrome) }
+                    Button(strings(.libraryExportAgent)) { model.export(item, side: .agent) }
                 }
                 Spacer()
                 Menu {
@@ -115,7 +132,21 @@ struct LibraryView: View {
                 }.menuStyle(.borderlessButton).frame(width: 25)
             }.disabled(
                 model.exportBusy || model.playback.preparing || model.preview
+                    || model.libraryMutationTask != nil
                     || item.directory == model.recordingURL)
+            SavedTranscriptView(
+                item: item,
+                seek: { seconds in
+                    if model.playback.duration > 0 {
+                        model.playback.seek(seconds)
+                    } else {
+                        model.play(item, at: seconds)
+                    }
+                }, processing: model.storedProcessing,
+                canProcess: !model.preview && !model.session.active && !model.starting && !model.endingSession
+                    && model.libraryMutationTask == nil,
+                continueProcessing: model.continueProcessing
+            )
             if model.canRecover(item) {
                 HStack {
                     Text(

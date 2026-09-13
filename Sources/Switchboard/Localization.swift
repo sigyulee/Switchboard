@@ -26,6 +26,42 @@ struct AppStrings: Sendable {
 
     func error(_ error: Error) -> String {
         if let failure = error as? AppFailure { return failure.message(using: self) }
+        if let failure = error as? ApplicationSelectionError {
+            let key: TextKey =
+                switch failure {
+                case .invalidApplication: .errorInvalidApplication
+                case .sameApplication: .errorSameApplication
+                case .switchboardSelected: .errorSwitchboardSelected
+                }
+            return self(key)
+        }
+        if let failure = error as? SessionStateError {
+            let key: TextKey =
+                switch failure {
+                case .invalidTransition: .errorSessionAction
+                case .invalidText: .errorSessionText
+                case .invalidTimestamp, .invalidInterval: .errorSessionData
+                }
+            return self(key)
+        }
+        if error is SessionManifestError { return self(.errorSessionData) }
+        if let failure = error as? SessionStoreError {
+            return self(failure == .destinationExists ? .errorSessionExists : .errorSessionStorage)
+        }
+        if error is LibraryFolderError { return self(.errorLocalFolder) }
+        if let failure = error as? TranscriptFailure {
+            let key: TextKey =
+                switch failure {
+                case .invalidConfiguration: .errorTranscriptConfiguration
+                case .invalidEntry, .invalidPath: .errorTranscriptData
+                case .invalidAudio: .errorTranscriptInput
+                case .capacityExceeded: .errorTranscriptLimit
+                case .staleSession: .errorTranscriptChanged
+                case .unavailableFormat: .errorTranscriptFormat
+                case .alreadyRunning: .errorTranscriptRunning
+                }
+            return self(key)
+        }
         if let failure = error as? RecorderFailure {
             return failure.media.map { self.error($0) } ?? failure.detail
         }

@@ -6,13 +6,13 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Switchboard receives Phone audio from a virtual device to send to the Agent, monitor, and record."
+            "value": "Switchboard receives caller audio through its virtual audio device."
           }
         },
         "ko": {
           "stringUnit": {
             "state": "translated",
-            "value": "Phone의 음성을 가상 오디오 장치에서 받아 Agent에 전달하고 듣기·녹음에 사용합니다."
+            "value": "가상 오디오 장치를 통해 Caller의 음성을 받습니다."
           }
         }
       }
@@ -22,13 +22,13 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Switchboard sends Agent audio playing in Chrome to the call and records it."
+            "value": "Switchboard receives audio from your selected Agent application for the session."
           }
         },
         "ko": {
           "stringUnit": {
             "state": "translated",
-            "value": "Chrome에서 재생하는 Agent 음성을 통화 상대에게 전달하고 녹음합니다."
+            "value": "세션에서 사용할 음성을 선택한 Agent 앱에서 받습니다."
           }
         }
       }

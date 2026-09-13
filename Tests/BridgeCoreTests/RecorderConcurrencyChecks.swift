@@ -105,7 +105,7 @@ struct RecorderConcurrencyChecks {
         let finished = Mutex<[Result<URL?, any Error>]>([])
         try concurrently(count: 4) { index in
             if index < 2 {
-                let side: AudioSide = index == 0 ? .caller : .chrome
+                let side: AudioSide = index == 0 ? .caller : .agent
                 let value: Float = index == 0 ? 0.25 : -0.25
                 let appended = recorder.append(
                     side: side, samples: [Float](repeating: value, count: 64), frame: index == 0 ? 1 : 0)
@@ -121,7 +121,7 @@ struct RecorderConcurrencyChecks {
         let manifest = try RecordingManifest.load(from: directory)
         try expect(manifest.durationFrames == 33 && manifest.status == .finalizing)
         let admission = accepted.withLock { $0 }
-        try expect(admission[.caller] != nil && admission[.chrome] != nil)
+        try expect(admission[.caller] != nil && admission[.agent] != nil)
         for side in AudioSide.allCases {
             var expected: [Float] = side == .caller ? [0.5, -0.5] : []
             if admission[side] == true {

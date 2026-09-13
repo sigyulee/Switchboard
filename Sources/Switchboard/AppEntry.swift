@@ -49,8 +49,9 @@ import SwiftUI
                 .environment(\.appStrings, model.strings)
                 .environment(\.locale, model.strings.locale)
                 .task { if delegate.attach(model) { model.boot() } }
+                .onOpenURL { model.openSession(at: $0) }
         }
-        .defaultSize(width: 780, height: 720)
+        .defaultSize(width: 1120, height: 760)
         .windowResizability(.contentMinSize)
         .commands {
             CommandGroup(after: .textEditing) {
@@ -58,6 +59,8 @@ import SwiftUI
                     .keyboardShortcut("f", modifiers: .command)
             }
             CommandGroup(after: .newItem) {
+                Button(strings(.actionOpen)) { model.chooseSessionToOpen() }
+                    .keyboardShortcut("o", modifiers: .command)
                 Button(model.isRecording ? strings(.actionStopRecording) : strings(.actionStartRecording)) {
                     if model.isRecording {
                         Task { await model.stopRecording() }
@@ -67,8 +70,7 @@ import SwiftUI
                 }
                 .keyboardShortcut("r", modifiers: [.command, .shift])
                 .disabled(
-                    model.preview || model.starting || model.pausing
-                        || (!model.isRecording && (!model.audio.callerReady || !model.phoneRunning))
+                    model.preview || model.session.busy || !model.session.active
                 )
             }
         }

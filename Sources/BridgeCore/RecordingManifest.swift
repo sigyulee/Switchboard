@@ -3,7 +3,10 @@ import Foundation
 // Keep the legacy automatic value only so older recording manifests remain readable.
 public enum RecordingOwner: String, Codable, Sendable { case manual, automatic }
 
-public enum AudioSide: String, Codable, CaseIterable, Sendable { case caller, chrome }
+public enum AudioSide: String, Codable, CaseIterable, Sendable {
+    case caller
+    case agent = "chrome"
+}
 public struct AudioGap: Codable, Equatable, Sendable {
     public let side: AudioSide
     public let startFrame: Int64

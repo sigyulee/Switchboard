@@ -17,7 +17,10 @@ import RecorderKit
     private var requestTask: Task<Void, Never>?
     private var renderTask: Task<URL, Error>?
 
-    func play(_ item: RecordingItem, side: AudioSide?, onError: @escaping @MainActor (Error) -> Void) {
+    func play(
+        _ item: RecordingItem, side: AudioSide?, at seconds: Double = 0,
+        onError: @escaping @MainActor (Error) -> Void
+    ) {
         stop()
         let current = generation
         preparing = true
@@ -45,7 +48,7 @@ import RecorderKit
                 }
                 try Task.checkCancellation()
                 guard generation == current else { return }
-                try load(url: url, title: item.manifest.title)
+                try load(url: url, title: item.manifest.title, at: seconds)
             } catch is CancellationError {
                 // A different selection or Stop invalidated this request.
             } catch {
@@ -54,13 +57,15 @@ import RecorderKit
         }
     }
 
-    private func load(url: URL, title: String) throws {
+    private func load(url: URL, title: String, at seconds: Double) throws {
         let newPlayer = try AVAudioPlayer(contentsOf: url)
         newPlayer.currentDevice = nil
         guard newPlayer.prepareToPlay() else { throw AudioFailure(operation: .errorPlayback, code: -1) }
         player = newPlayer
         duration = newPlayer.duration
         self.title = title
+        newPlayer.currentTime = seconds.isFinite ? max(0, min(duration, seconds)) : 0
+        position = newPlayer.currentTime
         playing = newPlayer.play()
         let current = generation
         let task = Task.detached(priority: .utility) { try Waveform.read(url: url) }
@@ -78,6 +83,7 @@ import RecorderKit
         playing = player.isPlaying
     }
     func seek(_ value: Double) {
+        guard value.isFinite else { return }
         player?.currentTime = max(0, min(duration, value))
         refresh()
     }
@@ -85,6 +91,16 @@ import RecorderKit
         position = player?.currentTime ?? 0
         playing = player?.isPlaying ?? false
     }
+    func stopAndWait() async {
+        let request = requestTask
+        let render = renderTask
+        let waveform = waveformTask
+        stop()
+        await request?.value
+        _ = try? await render?.value
+        _ = try? await waveform?.value
+    }
+
     func stop() {
         requestTask?.cancel()
         requestTask = nil

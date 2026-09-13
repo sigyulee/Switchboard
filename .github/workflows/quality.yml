@@ -37,24 +37,43 @@ jobs:
         run: python3 scripts/compile-localizations.py --check
 
   macos-build:
-    name: macOS build and Swift regression checks
-    runs-on: xcode-27
+    name: macOS build and Swift regression checks (${{ matrix.toolchain }})
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runner: macos-26
+            toolchain: Xcode 26.0.1
+            developer-directory: /Applications/Xcode_26.0.1.app/Contents/Developer
+          - runner: xcode-27
+            toolchain: Xcode 27
+            developer-directory: ''
+    runs-on: ${{ matrix.runner }}
     timeout-minutes: 20
     steps:
       - name: Check out source
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           persist-credentials: false
+      - name: Select oldest supported Xcode
+        if: matrix.developer-directory != ''
+        env:
+          DEVELOPER_DIRECTORY: ${{ matrix.developer-directory }}
+        run: |
+          test -d "$DEVELOPER_DIRECTORY"
+          echo "DEVELOPER_DIR=$DEVELOPER_DIRECTORY" >> "$GITHUB_ENV"
       - name: Validate toolchain
         run: bash scripts/check-toolchain.sh
       - name: Lint Swift
         run: |
           xcrun swift-format lint --strict --configuration .swift-format --recursive \
             Package.swift Sources Tests Installer
-      - name: Build release app and both drivers
+      - name: Build release app and audio drivers
         run: bash scripts/build-app.sh release
       - name: Run Swift regression checks
         run: bash scripts/swift.sh run --configuration release --skip-build BridgeChecks
+      - name: Check application capture configuration
+        run: bash scripts/check-tap.sh
 
   address-sanitizers:
     name: C AddressSanitizer and UndefinedBehaviorSanitizer

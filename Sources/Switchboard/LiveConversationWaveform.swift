@@ -6,7 +6,7 @@ struct LiveConversationWaveform: View {
     let agent: [Float]
 
     var body: some View {
-        VStack(spacing: 8) {
+        Grid(alignment: .leading, horizontalSpacing: 12, verticalSpacing: 8) {
             row(strings(.waveformCaller), samples: caller, color: .teal)
             row("Agent", samples: agent, color: .blue)
         }
@@ -15,9 +15,9 @@ struct LiveConversationWaveform: View {
     }
 
     private func row(_ title: String, samples: [Float], color: Color) -> some View {
-        HStack(spacing: 12) {
+        GridRow {
             Text(title).font(.system(size: 14, weight: .medium))
-                .foregroundStyle(.secondary).frame(width: 44, alignment: .leading)
+                .foregroundStyle(.secondary).fixedSize()
             Canvas { context, size in
                 let center = size.height / 2
                 var baseline = Path()

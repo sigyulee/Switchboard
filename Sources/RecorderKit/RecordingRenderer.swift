@@ -9,8 +9,8 @@ public enum RecordingRenderer {
     ) throws {
         try item.manifest.validate()
         guard item.manifest.durationFrames > 0 else { throw MediaFailure.noRecording }
-        let caller = SourceReader(item: item, side: .caller)
-        let chrome = SourceReader(item: item, side: .chrome)
+        let caller = try RecordingAudioReader(item: item, side: .caller)
+        let agent = try RecordingAudioReader(item: item, side: .agent)
         let settings: [String: Any]
         if destination.pathExtension.lowercased() == "m4a" {
             settings = [
@@ -29,12 +29,12 @@ public enum RecordingRenderer {
             while position < item.manifest.durationFrames {
                 if Task<Never, Never>.isCancelled { throw CancellationError() }
                 let count = Int(min(4096, item.manifest.durationFrames - position))
-                let a = side == .chrome ? [] : try caller.read(at: position, frames: count)
-                let b = side == .caller ? [] : try chrome.read(at: position, frames: count)
+                let a = side == .agent ? [] : try caller.read(at: position, frames: count)
+                let b = side == .caller ? [] : try agent.read(at: position, frames: count)
                 let samples: [Float]
                 if side == .caller {
                     samples = a
-                } else if side == .chrome {
+                } else if side == .agent {
                     samples = b
                 } else {
                     samples = zip(a, b).map { min(1, max(-1, ($0 + $1) * 0.5)) }

@@ -14,6 +14,7 @@ xcrun swift-format lint --strict --configuration .swift-format --recursive \
     Package.swift Sources Tests Installer
 bash scripts/swift.sh run --configuration debug BridgeChecks
 bash scripts/check-queue.sh
+bash scripts/check-tap.sh
 bash scripts/check-driver.sh
 bash scripts/check-swift-concurrency.sh
 bash scripts/check-queue.sh thread

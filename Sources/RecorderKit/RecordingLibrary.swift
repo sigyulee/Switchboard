@@ -18,13 +18,40 @@ public enum RecordingLibrary {
         guard FileManager.default.fileExists(atPath: root.path) else { return [] }
         let children = try FileManager.default.contentsOfDirectory(
             at: root, includingPropertiesForKeys: [.isDirectoryKey, .isSymbolicLinkKey])
-        return children.filter { $0.pathExtension == "mihrecording" }.compactMap { url in
-            guard let values = try? url.resourceValues(forKeys: [.isDirectoryKey, .isSymbolicLinkKey]),
-                values.isDirectory == true, values.isSymbolicLink != true,
-                let manifest = try? RecordingManifest.load(from: url)
-            else { return nil }
-            return RecordingItem(directory: url, manifest: manifest)
-        }.sorted { $0.manifest.createdAt > $1.manifest.createdAt }
+        return children.compactMap { try? item(at: $0) }.sorted {
+            $0.manifest.createdAt > $1.manifest.createdAt
+        }
+    }
+
+    public static func item(at directory: URL) throws -> RecordingItem {
+        guard directory.isFileURL,
+            ["mihrecording", "switchboard"].contains(directory.pathExtension.lowercased())
+        else {
+            throw MediaFailure.invalidPath
+        }
+        let values = try directory.resourceValues(forKeys: [.isDirectoryKey, .isSymbolicLinkKey])
+        guard values.isDirectory == true, values.isSymbolicLink != true else {
+            throw MediaFailure.invalidPath
+        }
+        let manifest = try RecordingManifest.load(from: directory)
+        if directory.pathExtension.lowercased() == SessionManifest.packageExtension
+            || FileManager.default.fileExists(
+                atPath: directory.appendingPathComponent(SessionManifest.filename).path)
+        {
+            let session = try SessionStore.metadata(in: directory)
+            guard session.id == manifest.id, session.createdAt == manifest.createdAt else {
+                throw SessionStoreError.identityMismatch
+            }
+        }
+        return RecordingItem(directory: directory, manifest: manifest)
+    }
+
+    /// Reconcile explicitly opened files without registering or scanning their parent folders.
+    public static func refreshed(_ previous: [RecordingItem]) -> [RecordingItem] {
+        previous.compactMap { old in
+            guard let current = try? item(at: old.directory), current.id == old.id else { return nil }
+            return current
+        }
     }
 
     public static func recover(_ item: RecordingItem) throws -> RecordingItem {
@@ -69,16 +96,19 @@ public enum RecordingLibrary {
     }
 }
 
-final class SourceReader {
+public final class RecordingAudioReader {
     private let directory: URL
     private let segments: [RecordingSegment]
     private var currentName: String?
     private var file: AVAudioFile?
-    init(item: RecordingItem, side: AudioSide) {
+    public init(item: RecordingItem, side: AudioSide) throws {
+        try item.manifest.validate()
         directory = item.directory
         segments = item.manifest.segments.filter { $0.side == side }.sorted { $0.startFrame < $1.startFrame }
     }
-    func read(at start: Int64, frames: Int) throws -> [Float] {
+    public func read(at start: Int64, frames: Int) throws -> [Float] {
+        let (_, overflow) = start.addingReportingOverflow(Int64(frames))
+        guard start >= 0, frames > 0, frames <= 480_000, !overflow else { throw MediaFailure.invalidBuffer }
         var result = [Float](repeating: 0, count: frames * 2)
         for segment in segments
         where segment.startFrame < start + Int64(frames) && segment.startFrame + segment.frames > start {
