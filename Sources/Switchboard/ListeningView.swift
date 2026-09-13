@@ -79,7 +79,7 @@ struct RecordingTransport: View {
                 }
                 .buttonStyle(.borderedProminent).tint(model.isRecording ? .red : .blue)
                 .controlSize(.large).disabled(
-                    model.preview || model.stopping
+                    model.preview || model.starting || model.stopping || model.pausing
                         || (!model.isRecording && (!model.audio.callerReady || !model.phoneRunning)))
             }
             if !model.finalizing.isEmpty {

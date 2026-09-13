@@ -125,7 +125,7 @@ struct SettingsView: View {
             Text(model.recordingRoot.path).font(.system(size: 14)).foregroundStyle(.secondary).textSelection(
                 .enabled)
             Button(strings(.settingsChangeFolder)) { model.chooseRecordingFolder() }.disabled(
-                model.preview || model.isRecording)
+                !model.canChangeRecordingFolder)
             Divider()
             LabeledContent(
                 strings(.settingsVersion),

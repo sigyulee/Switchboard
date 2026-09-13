@@ -7,10 +7,7 @@ struct LanguageChoiceView: View {
     var body: some View {
         VStack(spacing: 28) {
             SwitchboardMark().frame(width: 64, height: 64)
-            VStack(spacing: 10) {
-                Text("Switchboard").font(.system(size: 28, weight: .semibold))
-                Text("Choose a language · 언어 선택").font(.system(size: 16)).foregroundStyle(.secondary)
-            }
+            Text("Switchboard").font(.system(size: 28, weight: .semibold))
             VStack(spacing: 12) {
                 ForEach(ApplicationLanguage.allCases) { language in
                     Button {

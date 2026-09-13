@@ -422,61 +422,13 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Audio devices to select in Phone"
+            "value": "Input/Output selection guide"
           }
         },
         "ko": {
           "stringUnit": {
             "state": "translated",
-            "value": "Phone에서 선택할 오디오 장치"
-          }
-        }
-      }
-    },
-    "route.phoneSpeaker": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Phone speaker"
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Phone 스피커"
-          }
-        }
-      }
-    },
-    "route.phoneMicrophone": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Phone microphone"
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Phone 마이크"
-          }
-        }
-      }
-    },
-    "route.defaultHelp": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Chrome microphone: Default"
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Chrome 마이크: Default"
+            "value": "입력·출력 선택 안내"
           }
         }
       }
@@ -2077,6 +2029,70 @@
           "stringUnit": {
             "state": "translated",
             "value": "장치 없음"
+          }
+        }
+      }
+    },
+    "route.callerSpeaker": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Caller speaker"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "통화 앱 스피커"
+          }
+        }
+      }
+    },
+    "route.callerMicrophone": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Caller microphone"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "통화 앱 마이크"
+          }
+        }
+      }
+    },
+    "route.agentMicrophone": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Agent microphone"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Agent 마이크"
+          }
+        }
+      }
+    },
+    "route.defaultInput": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Default"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "기본값"
           }
         }
       }

@@ -63,7 +63,8 @@ import SwiftUI
                 }
                 .keyboardShortcut("r", modifiers: [.command, .shift])
                 .disabled(
-                    model.preview || (!model.isRecording && (!model.audio.callerReady || !model.phoneRunning))
+                    model.preview || model.starting || model.pausing
+                        || (!model.isRecording && (!model.audio.callerReady || !model.phoneRunning))
                 )
             }
         }

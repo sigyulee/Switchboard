@@ -79,7 +79,7 @@ struct SessionView: View {
                 } else {
                     Button(model.suspended ? strings(.actionResume) : strings(.actionPause)) {
                         if model.suspended { model.resume() } else { Task { await model.pause() } }
-                    }.disabled(model.preview || model.installing)
+                    }.disabled(model.preview || model.installing || model.pausing)
                         .help(strings(.sessionPauseHelp))
                 }
             }
@@ -101,11 +101,9 @@ struct SessionView: View {
             ListeningView(model: model)
             DisclosureGroup(strings(.routeDeviceHelp)) {
                 VStack(alignment: .leading, spacing: 8) {
-                    LabeledContent(strings(.routePhoneSpeaker), value: "Phone → Agent")
-                    LabeledContent(strings(.routePhoneMicrophone), value: "Chrome → Phone")
-                    Text(strings(.routeDefaultHelp))
-                        .font(.system(size: 14)).foregroundStyle(.secondary).fixedSize(
-                            horizontal: false, vertical: true)
+                    LabeledContent(strings(.routeAgentMicrophone), value: strings(.routeDefaultInput))
+                    LabeledContent(strings(.routeCallerSpeaker), value: "Phone → Agent")
+                    LabeledContent(strings(.routeCallerMicrophone), value: "Chrome → Phone")
                 }.font(.system(size: 15)).padding(.top, 10)
             }.font(.system(size: 14)).foregroundStyle(.secondary)
         }

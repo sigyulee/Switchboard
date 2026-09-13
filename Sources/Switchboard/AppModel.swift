@@ -18,7 +18,12 @@ import RecorderKit
     }
     var strings: AppStrings { AppStrings(language: language ?? .english) }
     private var loop: Task<Void, Never>?
+    private var pauseTask: Task<Void, Never>?
+    private var recordingStartTask: Task<Void, Never>?
     private var recordingStopTask: Task<Void, Never>?
+    private var libraryLoadTask: Task<Void, Never>?
+    private var libraryRefresh = LibraryRefreshState()
+    private let libraryWork = AsyncSerialQueue(label: "com.switchboard.main.library", qos: .utility)
     private var refreshIndex = 0
     var devices: [AudioDevice] = []
     var audio = PipelineSnapshot()
@@ -27,6 +32,8 @@ import RecorderKit
     var suspended = false
     var installing = false
     var stopping = false
+    var starting = false
+    var pausing = false
     var recordingURL: URL?
     var recordings: [RecordingItem] = []
     var selectedRecordingID: UUID? {
@@ -61,6 +68,15 @@ import RecorderKit
     var requiresSetup: Bool { !driversReady || !microphoneAllowed || !captureAccessRequested }
     var microphoneAllowed: Bool { preview || AVCaptureDevice.authorizationStatus(for: .audio) == .authorized }
     var isRecording: Bool { recordingURL != nil }
+    var libraryAccess: RecordingLibraryAccess {
+        RecordingLibraryAccess(
+            preview: preview, starting: starting, recordingDirectory: recordingURL, finalizing: finalizing)
+    }
+    var canChangeRecordingFolder: Bool { libraryAccess.canChangeFolder }
+    func canEdit(_ item: RecordingItem) -> Bool { libraryAccess.canEdit(item.directory) }
+    func canRecover(_ item: RecordingItem) -> Bool {
+        libraryAccess.canRecover(item.directory, status: item.manifest.status)
+    }
     var selectedItem: RecordingItem? { recordings.first { $0.id == selectedRecordingID } }
     var preferredDevice: AudioDevice? { outputs.first { $0.uid == preferredUID } }
     var preferredOutputName: String {
@@ -139,8 +155,8 @@ import RecorderKit
             pipeline.configure(
                 callerID: callerDevice?.id, replyID: replyDevice?.id,
                 monitorID: monitorDevice?.id,
-                chromeRunning: chromeRunning && phoneRunning && captureAccessRequested)
-            pipeline.volumes(caller: Float(callerVolume), chrome: Float(chromeVolume))
+                chromeRunning: chromeRunning && phoneRunning && captureAccessRequested,
+                callerVolume: Float(callerVolume), chromeVolume: Float(chromeVolume))
         } else if !suspended && !installing {
             pipeline.configure(callerID: nil, replyID: nil, monitorID: nil, chromeRunning: false)
         }
@@ -198,14 +214,28 @@ import RecorderKit
         }
     }
     func pause() async {
+        if let pauseTask {
+            await pauseTask.value
+            return
+        }
         suspended = true
         guard !preview else { return }
-        if isRecording { await stopRecording() }
-        pipeline.shutdownRoutes()
-        do { try lease.restore(devices: devices) } catch { errorMessage = strings.error(error) }
-        refresh()
+        pausing = true
+        let task = Task { [self] in
+            defer {
+                pausing = false
+                pauseTask = nil
+            }
+            await stopRecording()
+            await pipeline.shutdownRoutes()
+            do { try lease.restore(devices: devices) } catch { errorMessage = strings.error(error) }
+            refresh()
+        }
+        pauseTask = task
+        await task.value
     }
     func resume() {
+        guard !pausing, !installing else { return }
         suspended = false
         refresh()
     }
@@ -216,18 +246,32 @@ import RecorderKit
     func shutdown() async {
         loop?.cancel()
         loop = nil
+        libraryRefresh.shutdown()
+        libraryLoadTask?.cancel()
+        libraryLoadTask = nil
         if !preview { await pause() }
         playback.stop()
     }
 
     func startRecording() {
-        guard !preview, !isRecording, !stopping, audio.callerReady, phoneRunning else { return }
-        do {
-            recordingURL = try pipeline.startRecording(root: recordingRoot, owner: .manual)
-            reloadLibrary()
-        } catch { errorMessage = strings.error(error) }
+        guard !preview, !isRecording, !starting, !stopping, !suspended, !pausing,
+            !installing, audio.callerReady, phoneRunning
+        else { return }
+        starting = true
+        let root = recordingRoot
+        recordingStartTask = Task { [self] in
+            defer {
+                starting = false
+                recordingStartTask = nil
+                reloadLibrary(afterChange: true)
+            }
+            do {
+                recordingURL = try await pipeline.startRecording(root: root, owner: .manual)
+            } catch { errorMessage = strings.error(error) }
+        }
     }
     func stopRecording() async {
+        await recordingStartTask?.value
         if let recordingStopTask {
             await recordingStopTask.value
             return
@@ -258,15 +302,40 @@ import RecorderKit
                 }.value
             } catch { errorMessage = strings.error(error) }
             finalizing.remove(directory)
-            reloadLibrary()
+            reloadLibrary(afterChange: true)
         }
     }
-    func reloadLibrary() {
-        guard !preview else { return }
-        do {
-            let items = try RecordingLibrary.items(in: recordingRoot)
-            if recordings != items { recordings = items }
-        } catch { errorMessage = strings.error(error) }
+    func reloadLibrary(afterChange: Bool = false) {
+        guard !preview,
+            let request = libraryRefresh.request(root: recordingRoot, afterChange: afterChange)
+        else { return }
+        libraryLoadTask?.cancel()
+        loadLibrary(request)
+    }
+    private func loadLibrary(_ request: LibraryRefreshState.Request) {
+        libraryLoadTask = Task { [self] in
+            defer {
+                // An old root's completion must not clear a newer task or its dirty refresh.
+                if libraryRefresh.isCurrent(request) {
+                    libraryLoadTask = nil
+                    if let next = libraryRefresh.finish(request) { loadLibrary(next) }
+                }
+            }
+            do {
+                let items = try await libraryWork.run { try RecordingLibrary.items(in: request.root) }
+                guard !Task.isCancelled, libraryRefresh.canPublish(request), request.root == recordingRoot
+                else { return }
+                let visible = items.filter {
+                    libraryAccess.canDisplay($0.directory, status: $0.manifest.status)
+                }
+                if recordings != visible { recordings = visible }
+            } catch is CancellationError {
+            } catch {
+                if !Task.isCancelled, libraryRefresh.canPublish(request) {
+                    errorMessage = strings.error(error)
+                }
+            }
+        }
     }
     private func loadPreview() {
         devices = [

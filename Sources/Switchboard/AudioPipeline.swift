@@ -2,6 +2,7 @@ import AudioRealtime
 import BridgeCore
 import Foundation
 import RecorderKit
+import Synchronization
 
 struct PipelineSnapshot: Sendable, Equatable {
     var updatedAt: Double = 0
@@ -22,7 +23,9 @@ struct PipelineSnapshot: Sendable, Equatable {
 
 // Device lifetimes and state are confined to work. C callbacks only access their SPSC queue.
 final class AudioPipeline: @unchecked Sendable {
-    private let work = DispatchQueue(label: "com.switchboard.main.audio", qos: .userInteractive)
+    private let work = AsyncSerialQueue(label: "com.switchboard.main.audio", qos: .userInteractive)
+    private let files = AsyncSerialQueue(label: "com.switchboard.main.audio-files", qos: .utility)
+    private let pendingConfiguration = Mutex<PipelineConfiguration?>(nil)
     private let permissionWork = DispatchQueue(
         label: "com.switchboard.main.audio-permission", qos: .userInitiated)
     private let publication = NSLock()
@@ -49,15 +52,36 @@ final class AudioPipeline: @unchecked Sendable {
     private var recordOrigin: Double = 0
 
     init() {
-        let timer = DispatchSource.makeTimerSource(queue: work)
+        let timer = DispatchSource.makeTimerSource(queue: work.dispatchQueue)
         timer.schedule(deadline: .now(), repeating: .milliseconds(10), leeway: .milliseconds(1))
         timer.setEventHandler { [weak self] in self?.tick() }
         self.timer = timer
         timer.resume()
     }
 
-    func configure(callerID: UInt32?, replyID: UInt32?, monitorID: UInt32?, chromeRunning: Bool) {
-        work.sync {
+    func configure(
+        callerID: UInt32?, replyID: UInt32?, monitorID: UInt32?, chromeRunning: Bool,
+        callerVolume: Float = 1, chromeVolume: Float = 1
+    ) {
+        let next = PipelineConfiguration(
+            callerID: callerID, replyID: replyID, monitorID: monitorID,
+            chromeRunning: chromeRunning, callerVolume: callerVolume, chromeVolume: chromeVolume)
+        let schedule = pendingConfiguration.withLock { pending in
+            let schedule = pending == nil
+            pending = next
+            return schedule
+        }
+        guard schedule else { return }
+        work.submit { [self] in
+            let next = pendingConfiguration.withLock { pending in
+                defer { pending = nil }
+                return pending
+            }
+            guard let next else { return }
+            let (callerID, replyID, monitorID, chromeRunning) =
+                (next.callerID, next.replyID, next.monitorID, next.chromeRunning)
+            self.callerVolume = next.callerVolume
+            self.chromeVolume = next.chromeVolume
             if caller?.deviceID != callerID || caller?.needsRestart == true {
                 caller = nil
                 if let id = callerID {
@@ -104,12 +128,6 @@ final class AudioPipeline: @unchecked Sendable {
             publish()
         }
     }
-    func volumes(caller: Float, chrome: Float) {
-        work.sync {
-            callerVolume = caller
-            chromeVolume = chrome
-        }
-    }
     func requestCapturePermission() async throws {
         try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
             permissionWork.async { [self] in
@@ -141,8 +159,9 @@ final class AudioPipeline: @unchecked Sendable {
         state.updatedAt = sb_host_seconds(sb_host_time())
         publication.withLock { published = state }
     }
-    func shutdownRoutes() {
-        work.sync {
+    func shutdownRoutes() async {
+        pendingConfiguration.withLock { $0 = nil }
+        await work.complete { [self] in
             chrome = nil
             tap = nil
             caller = nil
@@ -159,16 +178,16 @@ final class AudioPipeline: @unchecked Sendable {
             }
         }
     }
-    func startRecording(root: URL, owner: RecordingOwner) throws -> URL {
+    func startRecording(root: URL, owner: RecordingOwner) async throws -> URL {
         let id = UUID()
         let recorder = ConversationRecorder { [weak self] message in
-            self?.work.async { [weak self] in
+            self?.work.submit { [weak self] in
                 guard let self, recordingID == id else { return }
                 state.recordingError = AppFailure(message)
             }
         }
-        let url = try recorder.start(root: root, owner: owner)
-        work.sync {
+        let url = try await files.run { try recorder.start(root: root, owner: owner) }
+        await work.complete { [self] in
             self.recorder = recorder
             recordingID = id
             recordOrigin = sb_host_seconds(sb_host_time())
@@ -177,15 +196,15 @@ final class AudioPipeline: @unchecked Sendable {
         return url
     }
     func stopRecording() async throws -> URL? {
-        let stopped: (ConversationRecorder?, Int64) = work.sync {
+        let stopped: (ConversationRecorder?, Int64) = await work.complete { [self] in
             let value = recorder
             recorder = nil
             recordingID = nil
             return (value, Int64(max(0, sb_host_seconds(sb_host_time()) - recordOrigin) * PCM.rate))
         }
         guard let recorder = stopped.0 else { return nil }
-        return try await Task.detached(priority: .utility) { try recorder.finish(durationFrames: stopped.1) }
-            .value
+        let result = await files.complete { Result { try recorder.finish(durationFrames: stopped.1) } }
+        return try result.get()
     }
 
     private func tick() {
@@ -253,4 +272,13 @@ final class AudioPipeline: @unchecked Sendable {
         }
     }
     deinit { timer?.cancel() }
+}
+
+private struct PipelineConfiguration: Sendable {
+    let callerID: UInt32?
+    let replyID: UInt32?
+    let monitorID: UInt32?
+    let chromeRunning: Bool
+    let callerVolume: Float
+    let chromeVolume: Float
 }

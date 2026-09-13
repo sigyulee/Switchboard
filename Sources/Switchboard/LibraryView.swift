@@ -82,20 +82,19 @@ struct LibraryView: View {
                 Spacer()
                 Menu {
                     Button(strings(.libraryRename)) { model.rename(item) }
+                        .disabled(!model.canEdit(item))
                     Button(strings(.libraryReveal)) {
                         NSWorkspace.shared.activateFileViewerSelecting([item.directory])
                     }
                     Button(strings(.libraryTrash), role: .destructive) { model.trash(item) }
+                        .disabled(!model.canEdit(item))
                 } label: {
                     Image(systemName: "ellipsis")
                 }.menuStyle(.borderlessButton).frame(width: 25)
             }.disabled(
                 model.exportBusy || model.playback.preparing || model.preview
                     || item.directory == model.recordingURL)
-            if item.manifest.status == .recoverable || item.manifest.status == .failed
-                || (item.manifest.status == .recording && item.directory != model.recordingURL)
-                || (item.manifest.status == .finalizing && !model.finalizing.contains(item.directory))
-            {
+            if model.canRecover(item) {
                 HStack {
                     Text(
                         item.manifest.failureCode.flatMap(MediaFailure.init(rawValue:)).map {
@@ -105,7 +104,7 @@ struct LibraryView: View {
                         .foregroundStyle(.orange)
                     Spacer()
                     Button(strings(.libraryRecover)) { model.recover(item) }.disabled(
-                        model.finalizing.contains(item.directory))
+                        !model.canEdit(item))
                 }
             }
             if model.playback.duration > 0 {

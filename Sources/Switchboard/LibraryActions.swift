@@ -38,12 +38,13 @@ extension AppModel {
         }
     }
     func chooseRecordingFolder() {
+        guard canChangeRecordingFolder else { return }
         let panel = NSOpenPanel()
         panel.canChooseFiles = false
         panel.canChooseDirectories = true
         panel.canCreateDirectories = true
         panel.directoryURL = recordingRoot
-        if panel.runModal() == .OK, let url = panel.url {
+        if panel.runModal() == .OK, let url = panel.url, canChangeRecordingFolder {
             recordingRoot = url
             UserDefaults.standard.set(url.path, forKey: "recordingRoot")
             reloadLibrary()
@@ -71,7 +72,7 @@ extension AppModel {
         }
     }
     func rename(_ item: RecordingItem) {
-        guard item.directory != recordingURL, !finalizing.contains(item.directory) else { return }
+        guard canEdit(item) else { return }
         let alert = NSAlert()
         alert.messageText = strings(.libraryRenameTitle)
         let field = NSTextField(string: item.manifest.title)
@@ -79,25 +80,30 @@ extension AppModel {
         alert.accessoryView = field
         alert.addButton(withTitle: strings(.actionSave))
         alert.addButton(withTitle: strings(.actionCancel))
-        if alert.runModal() == .alertFirstButtonReturn {
+        if alert.runModal() == .alertFirstButtonReturn, canEdit(item) {
             do {
                 try RecordingLibrary.rename(item, title: field.stringValue)
-                reloadLibrary()
+                reloadLibrary(afterChange: true)
             } catch { errorMessage = strings.error(error) }
         }
     }
     func trash(_ item: RecordingItem) {
-        guard item.directory != recordingURL, !finalizing.contains(item.directory) else { return }
+        guard canEdit(item) else { return }
         playback.stop()
         do {
             try FileManager.default.trashItem(at: item.directory, resultingItemURL: nil)
-            reloadLibrary()
+            reloadLibrary(afterChange: true)
         } catch { errorMessage = strings.error(error) }
     }
     func recover(_ item: RecordingItem) {
+        guard canEdit(item) else { return }
         do {
-            _ = try RecordingLibrary.recover(item)
-            finalize(item.directory)
+            let recovered = try RecordingLibrary.recover(item)
+            if recovered.manifest.status == .complete {
+                reloadLibrary(afterChange: true)
+            } else {
+                finalize(recovered.directory)
+            }
         } catch { errorMessage = strings.error(error) }
     }
 }

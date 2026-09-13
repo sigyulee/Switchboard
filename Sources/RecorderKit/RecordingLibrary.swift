@@ -28,9 +28,10 @@ public enum RecordingLibrary {
     }
 
     public static func recover(_ item: RecordingItem) throws -> RecordingItem {
-        var manifest = item.manifest
-        try manifest.validate()
-        guard manifest.status != .complete else { return item }
+        var manifest = try RecordingManifest.load(from: item.directory)
+        guard manifest.status != .complete else {
+            return RecordingItem(directory: item.directory, manifest: manifest)
+        }
         let children = try FileManager.default.contentsOfDirectory(
             at: item.directory, includingPropertiesForKeys: [.isSymbolicLinkKey])
         for url in children where url.pathExtension == "caf" {
@@ -60,7 +61,7 @@ public enum RecordingLibrary {
     }
 
     public static func rename(_ item: RecordingItem, title: String) throws {
-        var manifest = item.manifest
+        var manifest = try RecordingManifest.load(from: item.directory)
         let value = title.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !value.isEmpty else { return }
         manifest.title = value
