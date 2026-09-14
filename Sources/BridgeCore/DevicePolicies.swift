@@ -20,6 +20,14 @@ public struct InputLease: Codable, Sendable {
         restorationUID = uid
         return true
     }
+    /// Transfer an owned default-input change to a replacement bridge device.
+    /// An already selected new target belongs to the user, so it needs no lease.
+    public func retargeted(to uid: String, currentUID: String) -> Self? {
+        guard !uid.isEmpty, !currentUID.isEmpty else { return nil }
+        if currentUID == uid { return ownedUID == uid ? self : nil }
+        return Self(ownedUID: uid, previousUID: currentUID == ownedUID ? restorationUID : currentUID)
+    }
+
     public func restoration(currentUID: String) -> String? {
         guard currentUID == ownedUID, restorationUID != ownedUID, !restorationUID.isEmpty else { return nil }
         return restorationUID

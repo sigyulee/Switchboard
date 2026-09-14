@@ -70,8 +70,8 @@ public struct RecordingLibraryAccess: Sendable {
         !starting || status != .recording || directory == recordingDirectory
     }
 
-    public func canRecover(_ directory: URL, status: RecordingStatus) -> Bool {
-        canEdit(directory)
+    public func canRecover(_ directory: URL, status: RecordingStatus, busy: Bool = false) -> Bool {
+        !busy && canEdit(directory)
             && (status == .recording || status == .finalizing || status == .recoverable || status == .failed)
     }
 }

@@ -3,6 +3,17 @@ import Foundation
 import RecorderKit
 
 struct RecordingLibraryMutationChecks {
+    func recoveryWaitsForOtherLibraryWork() throws {
+        let directory = URL(fileURLWithPath: "/tmp/recovery.mihrecording")
+        let access = RecordingLibraryAccess(
+            preview: false, starting: false, recordingDirectory: nil, finalizing: [])
+        try expect(access.canRecover(directory, status: .recoverable))
+        try expect(!access.canRecover(directory, status: .recoverable, busy: true))
+        try expect(!access.canRecover(directory, status: .failed, busy: true))
+        try expect(access.canRecover(directory, status: .failed, busy: false))
+        try expect(!access.canRecover(directory, status: .complete))
+    }
+
     func staleRenamePreservesFinalizedMetadata() throws {
         let root = temporaryRoot()
         defer { try? FileManager.default.removeItem(at: root) }

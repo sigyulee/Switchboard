@@ -84,6 +84,11 @@ static SBEndpoint *create(uint32_t device, SBQueue *queue, bool input, int32_t *
     if (!status) status = AudioUnitSetProperty(e->unit, input ? kAudioOutputUnitProperty_SetInputCallback : kAudioUnitProperty_SetRenderCallback,
         input ? kAudioUnitScope_Global : kAudioUnitScope_Input, 0, &callback, sizeof(callback));
     if (!status) status = AudioUnitInitialize(e->unit);
+    AudioObjectID bound_device = kAudioObjectUnknown;
+    UInt32 bound_size = sizeof(bound_device);
+    if (!status) status = AudioUnitGetProperty(e->unit, kAudioOutputUnitProperty_CurrentDevice,
+        kAudioUnitScope_Global, 0, &bound_device, &bound_size);
+    if (!status && (bound_size != sizeof(bound_device) || bound_device != device)) status = kAudio_ParamError;
     if (status) { if (error) *error = status; sb_endpoint_destroy(e); return NULL; }
     return e;
 }

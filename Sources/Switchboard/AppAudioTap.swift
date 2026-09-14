@@ -1,37 +1,26 @@
 import CoreAudio
 import Foundation
 
-final class ChromeTap {
+final class AppAudioTap {
     private(set) var tapID: AudioObjectID = 0
     private(set) var deviceID: AudioDeviceID = 0
-    private var members: Set<AudioObjectID> = []
+    let target: AppAudioTarget
 
-    static func processes() -> [AudioObjectID] {
-        AudioDevices.objects(AudioDevices.system, kAudioHardwarePropertyProcessObjectList).filter {
-            let bundle = AudioDevices.string($0, kAudioProcessPropertyBundleID)
-            return bundle == "com.google.Chrome" || bundle.hasPrefix("com.google.Chrome.helper")
-        }
-    }
+    init(target: AppAudioTarget) { self.target = target }
+
     func start(requireRunningProcess: Bool = true, mute: Bool = true) throws {
-        let processes = Self.processes()
+        let processes = target.processes
         guard !requireRunningProcess || !processes.isEmpty else {
             throw AudioFailure(operation: .errorChromeWaiting, code: -2)
         }
-        let description = CATapDescription(stereoMixdownOfProcesses: processes)
-        description.name = "Switchboard · Chrome"
-        description.isPrivate = true
-        description.muteBehavior = mute ? .mutedWhenTapped : .unmuted
-        description.isProcessRestoreEnabled = true
-        description.bundleIDs = Array(
-            Set(
-                ["com.google.Chrome", "com.google.Chrome.helper"]
-                    + processes.map { AudioDevices.string($0, kAudioProcessPropertyBundleID) }))
+        let description = ProcessTapConfiguration.make(
+            processes: processes, name: "Switchboard · \(target.application.name)", mute: mute)
         var status = AudioHardwareCreateProcessTap(description, &tapID)
         guard status == noErr else {
             throw AudioFailure(operation: .errorChromePermission, code: status)
         }
         let aggregate: [String: Any] = [
-            kAudioAggregateDeviceNameKey: "Switchboard private Chrome tap",
+            kAudioAggregateDeviceNameKey: "Switchboard private application tap",
             kAudioAggregateDeviceUIDKey: "com.switchboard.main.tap.\(UUID().uuidString)",
             kAudioAggregateDeviceIsPrivateKey: true,
             kAudioAggregateDeviceTapAutoStartKey: true,
@@ -47,9 +36,7 @@ final class ChromeTap {
             stop()
             throw AudioFailure(operation: .errorChromeDevice, code: status)
         }
-        members = Set(processes)
     }
-    func membershipChanged() -> Bool { Set(Self.processes()) != members }
     func stop() {
         if deviceID != 0 {
             AudioHardwareDestroyAggregateDevice(deviceID)
@@ -59,7 +46,6 @@ final class ChromeTap {
             AudioHardwareDestroyProcessTap(tapID)
             tapID = 0
         }
-        members.removeAll()
     }
     deinit { stop() }
 }

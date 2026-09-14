@@ -182,13 +182,13 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Set Up"
+            "value": "Audio Setup"
           }
         },
         "ko": {
           "stringUnit": {
             "state": "translated",
-            "value": "사용 준비"
+            "value": "오디오 설정"
           }
         }
       }
@@ -236,7 +236,7 @@
         "ko": {
           "stringUnit": {
             "state": "translated",
-            "value": "통화"
+            "value": "세션"
           }
         }
       }
@@ -374,13 +374,13 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Open Phone to prepare the connection"
+            "value": "Waiting for Caller"
           }
         },
         "ko": {
           "stringUnit": {
             "state": "translated",
-            "value": "Phone 앱을 실행하면 자동으로 준비합니다"
+            "value": "통화 상대 대기 중"
           }
         }
       }
@@ -390,13 +390,13 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Waiting for Chrome"
+            "value": "Waiting for Agent"
           }
         },
         "ko": {
           "stringUnit": {
             "state": "translated",
-            "value": "Chrome 앱 실행 대기"
+            "value": "Agent 대기 중"
           }
         }
       }
@@ -492,7 +492,7 @@
         "ko": {
           "stringUnit": {
             "state": "translated",
-            "value": "내 듣기"
+            "value": "듣기"
           }
         }
       }
@@ -525,22 +525,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "장치 선택"
-          }
-        }
-      }
-    },
-    "monitor.previous": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Waiting for previous device"
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "이전 장치 재연결 대기"
           }
         }
       }
@@ -620,7 +604,7 @@
         "ko": {
           "stringUnit": {
             "state": "translated",
-            "value": "상담원"
+            "value": "통화 상대"
           }
         }
       }
@@ -636,7 +620,7 @@
         "ko": {
           "stringUnit": {
             "state": "translated",
-            "value": "상담원과 Agent의 실시간 음성 파형"
+            "value": "통화 상대와 Agent의 실시간 음성 파형"
           }
         }
       }
@@ -662,13 +646,13 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Set up audio"
+            "value": "Audio setup"
           }
         },
         "ko": {
           "stringUnit": {
             "state": "translated",
-            "value": "오디오 연결 준비"
+            "value": "오디오 설정"
           }
         }
       }
@@ -678,13 +662,13 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Two audio devices"
+            "value": "Audio devices"
           }
         },
         "ko": {
           "stringUnit": {
             "state": "translated",
-            "value": "두 오디오 장치"
+            "value": "오디오 장치"
           }
         }
       }
@@ -758,13 +742,13 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Microphone input"
+            "value": "Microphone access"
           }
         },
         "ko": {
           "stringUnit": {
             "state": "translated",
-            "value": "마이크 입력"
+            "value": "마이크 권한"
           }
         }
       }
@@ -774,13 +758,13 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Receive the call audio from the virtual device"
+            "value": "Receives the caller’s voice."
           }
         },
         "ko": {
           "stringUnit": {
             "state": "translated",
-            "value": "가상 장치의 통화 음성을 받습니다"
+            "value": "통화 상대의 음성을 받습니다."
           }
         }
       }
@@ -806,7 +790,7 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Request Access"
+            "value": "Request access"
           }
         },
         "ko": {
@@ -822,13 +806,13 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Chrome audio access"
+            "value": "App audio access"
           }
         },
         "ko": {
           "stringUnit": {
             "state": "translated",
-            "value": "Chrome 오디오 접근"
+            "value": "앱 오디오 권한"
           }
         }
       }
@@ -838,13 +822,13 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Request access, then allow it in the macOS dialog."
+            "value": "Receives the Agent app’s voice."
           }
         },
         "ko": {
           "stringUnit": {
             "state": "translated",
-            "value": "접근 요청을 누른 뒤 macOS 창에서 허용해 주세요."
+            "value": "Agent 앱의 음성을 받습니다."
           }
         }
       }
@@ -854,61 +838,13 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Request Audio Access"
+            "value": "Request access"
           }
         },
         "ko": {
           "stringUnit": {
             "state": "translated",
-            "value": "오디오 접근 요청"
-          }
-        }
-      }
-    },
-    "setup.requestAgain": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Request Again"
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "다시 요청"
-          }
-        }
-      }
-    },
-    "setup.pending": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Request started. You can check approval in System Settings."
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "요청을 시작했습니다. 허용 여부는 시스템 설정에서 확인할 수 있습니다."
-          }
-        }
-      }
-    },
-    "setup.systemSettings": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "System Settings"
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "시스템 설정"
+            "value": "권한 요청"
           }
         }
       }
@@ -982,13 +918,13 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Set Up & Permissions"
+            "value": "Audio setup and permissions"
           }
         },
         "ko": {
           "stringUnit": {
             "state": "translated",
-            "value": "사용 준비 및 권한 확인"
+            "value": "오디오 설정 및 권한"
           }
         }
       }
@@ -1110,13 +1046,13 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Play Mix"
+            "value": "Play"
           }
         },
         "ko": {
           "stringUnit": {
             "state": "translated",
-            "value": "합본 재생"
+            "value": "재생"
           }
         }
       }
@@ -1190,13 +1126,13 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Export All to Folder…"
+            "value": "Export session file"
           }
         },
         "ko": {
           "stringUnit": {
             "state": "translated",
-            "value": "모두 폴더로 내보내기…"
+            "value": "세션 파일 내보내기"
           }
         }
       }
@@ -1206,13 +1142,13 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Mixed M4A…"
+            "value": "Mixed M4A"
           }
         },
         "ko": {
           "stringUnit": {
             "state": "translated",
-            "value": "합본 M4A…"
+            "value": "합본 M4A"
           }
         }
       }
@@ -1222,13 +1158,13 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Caller WAV…"
+            "value": "Caller WAV"
           }
         },
         "ko": {
           "stringUnit": {
             "state": "translated",
-            "value": "통화 상대 WAV…"
+            "value": "통화 상대 WAV"
           }
         }
       }
@@ -1238,13 +1174,13 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Agent WAV…"
+            "value": "Agent WAV"
           }
         },
         "ko": {
           "stringUnit": {
             "state": "translated",
-            "value": "Agent WAV…"
+            "value": "Agent WAV"
           }
         }
       }
@@ -1430,13 +1366,13 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Set up Switchboard"
+            "value": "Audio setup required"
           }
         },
         "ko": {
           "stringUnit": {
             "state": "translated",
-            "value": "처음 사용 준비"
+            "value": "오디오 설정 필요"
           }
         }
       }
@@ -1446,13 +1382,13 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Waiting for Phone"
+            "value": "Waiting for Caller"
           }
         },
         "ko": {
           "stringUnit": {
             "state": "translated",
-            "value": "Phone 실행 대기"
+            "value": "통화 상대 대기 중"
           }
         }
       }
@@ -1462,13 +1398,13 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Waiting for Chrome"
+            "value": "Waiting for Agent"
           }
         },
         "ko": {
           "stringUnit": {
             "state": "translated",
-            "value": "Chrome 실행 대기"
+            "value": "Agent 대기 중"
           }
         }
       }
@@ -1750,13 +1686,13 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Waiting for Chrome audio"
+            "value": "Waiting for audio from the Agent app."
           }
         },
         "ko": {
           "stringUnit": {
             "state": "translated",
-            "value": "Chrome 오디오를 기다리는 중입니다"
+            "value": "Agent 앱의 오디오를 기다리고 있습니다."
           }
         }
       }
@@ -1766,13 +1702,13 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Check Chrome audio capture permission"
+            "value": "Application audio access is required."
           }
         },
         "ko": {
           "stringUnit": {
             "state": "translated",
-            "value": "Chrome 오디오 캡처 권한을 확인해 주세요"
+            "value": "앱 오디오 접근 권한이 필요합니다."
           }
         }
       }
@@ -1782,13 +1718,13 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Could not prepare the Chrome capture device"
+            "value": "Could not connect to the Agent audio."
           }
         },
         "ko": {
           "stringUnit": {
             "state": "translated",
-            "value": "Chrome 캡처 장치를 준비하지 못했습니다"
+            "value": "Agent 오디오에 연결하지 못했습니다."
           }
         }
       }
@@ -2093,6 +2029,2038 @@
           "stringUnit": {
             "state": "translated",
             "value": "기본값"
+          }
+        }
+      }
+    },
+    "action.start": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Start"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "시작"
+          }
+        }
+      }
+    },
+    "action.endSession": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "End Session"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "세션 종료"
+          }
+        }
+      }
+    },
+    "action.discard": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Discard"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "저장 안 함"
+          }
+        }
+      }
+    },
+    "action.open": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Open…"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "열기…"
+          }
+        }
+      }
+    },
+    "session.new": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "New session"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "새 세션"
+          }
+        }
+      }
+    },
+    "session.name": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Session name"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "세션 이름"
+          }
+        }
+      }
+    },
+    "session.description": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Description (optional)"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "설명 (선택 사항)"
+          }
+        }
+      }
+    },
+    "session.recording": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Recording"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "녹음"
+          }
+        }
+      }
+    },
+    "session.transcription": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Transcription"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "기록"
+          }
+        }
+      }
+    },
+    "session.paused": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Session paused"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "세션 일시정지"
+          }
+        }
+      }
+    },
+    "session.disconnected": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Caller disconnected"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "통화 상대 연결 끊김"
+          }
+        }
+      }
+    },
+    "session.endTitle": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Save this session?"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "세션을 저장할까요?"
+          }
+        }
+      }
+    },
+    "session.endMessage": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Save the audio, transcript, and session details."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "녹음과 기록, 세션 정보를 함께 저장합니다."
+          }
+        }
+      }
+    },
+    "settings.applications": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Applications"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "앱"
+          }
+        }
+      }
+    },
+    "settings.chooseApplication": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Choose application…"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "앱 선택…"
+          }
+        }
+      }
+    },
+    "settings.libraryFolders": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Library folders"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "라이브러리 폴더"
+          }
+        }
+      }
+    },
+    "settings.addFolder": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Add folder…"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "폴더 추가…"
+          }
+        }
+      }
+    },
+    "settings.removeFolder": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Remove folder"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "폴더 제거"
+          }
+        }
+      }
+    },
+    "settings.defaultFolder": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Default save folder"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "기본 저장 폴더"
+          }
+        }
+      }
+    },
+    "error.sameApplication": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Choose different applications for Agent and Caller."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Agent와 통화 상대에 서로 다른 앱을 선택해 주세요."
+          }
+        }
+      }
+    },
+    "error.invalidApplication": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Choose a valid application."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "사용할 앱을 선택해 주세요."
+          }
+        }
+      }
+    },
+    "error.switchboardSelected": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Choose the app that provides the Agent or call audio."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Agent 또는 통화 음성을 제공할 앱을 선택해 주세요."
+          }
+        }
+      }
+    },
+    "transcript.title": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Live transcript"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "실시간 기록"
+          }
+        }
+      }
+    },
+    "transcript.speechEngine": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Transcription engine"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "음성 인식 엔진"
+          }
+        }
+      }
+    },
+    "transcript.translationEngine": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Translation engine"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "번역 엔진"
+          }
+        }
+      }
+    },
+    "transcript.yourLanguage": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your language"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "내 언어"
+          }
+        }
+      }
+    },
+    "transcript.agentLanguage": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Agent language"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Agent 언어"
+          }
+        }
+      }
+    },
+    "transcript.callerLanguage": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Caller language"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "통화 상대 언어"
+          }
+        }
+      }
+    },
+    "transcript.chooseLanguage": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Select language"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "언어 선택"
+          }
+        }
+      }
+    },
+    "transcript.both": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Transcription + Translation"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "기록 + 번역"
+          }
+        }
+      }
+    },
+    "transcript.only": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Transcription only"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "기록만"
+          }
+        }
+      }
+    },
+    "transcript.configure": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Languages"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "언어"
+          }
+        }
+      }
+    },
+    "transcript.recordOnly": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Record only"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "녹음만 하기"
+          }
+        }
+      }
+    },
+    "transcript.downloadSpeech": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Download speech models"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "음성 인식 모델 다운로드"
+          }
+        }
+      }
+    },
+    "transcript.downloadTranslation": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Download translation"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "번역 모델 다운로드"
+          }
+        }
+      }
+    },
+    "transcript.ready": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ready"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "준비됨"
+          }
+        }
+      }
+    },
+    "transcript.notNeeded": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Same language"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "동일한 언어"
+          }
+        }
+      }
+    },
+    "transcript.downloadRequired": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Download needed"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "다운로드 필요"
+          }
+        }
+      }
+    },
+    "transcript.unsupported": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Unavailable"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "지원 안 됨"
+          }
+        }
+      }
+    },
+    "transcript.failed": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Error"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "오류"
+          }
+        }
+      }
+    },
+    "transcript.stopped": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Stopped"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "정지됨"
+          }
+        }
+      }
+    },
+    "transcript.waiting": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Waiting"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "대기 중"
+          }
+        }
+      }
+    },
+    "transcript.resourceLimit": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Resource limit"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "사용 가능한 모델 수 초과"
+          }
+        }
+      }
+    },
+    "transcript.catchingUp": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Catching up…"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "이전 음성 처리 중…"
+          }
+        }
+      }
+    },
+    "transcript.noMessages": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The conversation will appear here."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "대화가 여기에 표시됩니다."
+          }
+        }
+      }
+    },
+    "transcript.unsupportedPair": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Translation is unavailable for this language pair. Transcription can continue."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "이 언어 조합은 번역을 지원하지 않습니다. 기록은 계속할 수 있습니다."
+          }
+        }
+      }
+    },
+    "transcript.noSpeech": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Transcription is unavailable for these languages. You can keep recording."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "선택한 언어는 기록을 지원하지 않습니다. 녹음은 계속할 수 있습니다."
+          }
+        }
+      }
+    },
+    "transcript.gaps": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Some audio could not be transcribed."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "일부 음성을 기록하지 못했습니다."
+          }
+        }
+      }
+    },
+    "transcript.newMessages": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Latest messages"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "최신 메시지"
+          }
+        }
+      }
+    },
+    "library.exportText": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Export transcript"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "기록 내보내기"
+          }
+        }
+      }
+    },
+    "library.transcript": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Transcript"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "기록"
+          }
+        }
+      }
+    },
+    "transcript.earlierMessages": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Earlier messages"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "이전 메시지"
+          }
+        }
+      }
+    },
+    "role.caller": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Caller"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "통화 상대"
+          }
+        }
+      }
+    },
+    "session.unfinished": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Unsaved sessions"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "저장하지 않은 세션"
+          }
+        }
+      }
+    },
+    "error.sessionAction": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This action is unavailable in the current session."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "현재 세션에서는 이 작업을 수행할 수 없습니다."
+          }
+        }
+      }
+    },
+    "error.sessionText": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Use a shorter session name or description."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "세션 이름이나 설명을 더 짧게 입력해 주세요."
+          }
+        }
+      }
+    },
+    "error.sessionData": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The session file is damaged or incomplete."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "세션 파일이 손상되었거나 완전하지 않습니다."
+          }
+        }
+      }
+    },
+    "error.sessionExists": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A session with this name already exists. Choose another name."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "같은 이름의 세션이 있습니다. 다른 이름을 선택해 주세요."
+          }
+        }
+      }
+    },
+    "error.sessionStorage": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The session file could not be saved or opened."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "세션 파일을 저장하거나 열지 못했습니다."
+          }
+        }
+      }
+    },
+    "error.localFolder": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Choose a folder on this Mac."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mac에서 사용할 폴더를 선택해 주세요."
+          }
+        }
+      }
+    },
+    "error.transcriptConfiguration": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Select the Caller, Agent, and translation languages."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "통화 상대와 Agent의 언어, 번역할 언어를 선택해 주세요."
+          }
+        }
+      }
+    },
+    "error.transcriptData": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The saved transcript is damaged."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "저장된 기록가 손상되었습니다."
+          }
+        }
+      }
+    },
+    "error.transcriptLimit": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Transcription reached its memory limit. Recording can continue."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "기록에 사용할 수 있는 메모리가 부족합니다. 녹음은 계속할 수 있습니다."
+          }
+        }
+      }
+    },
+    "error.transcriptFormat": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The speech engine cannot read this audio format."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "음성 인식 엔진이 이 오디오 형식을 읽을 수 없습니다."
+          }
+        }
+      }
+    },
+    "error.transcriptRunning": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Transcription is already running."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "이미 기록 중입니다."
+          }
+        }
+      }
+    },
+    "error.transcriptChanged": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The session has changed. Try again."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "세션 상태가 변경되었습니다. 다시 시도해 주세요."
+          }
+        }
+      }
+    },
+    "error.transcriptInput": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Transcription stopped receiving audio."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "기록할 음성이 입력되지 않고 있습니다."
+          }
+        }
+      }
+    },
+    "library.continueTranscription": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Continue processing"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "이어서 처리"
+          }
+        }
+      }
+    },
+    "error.replacementBackup": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The session was saved. The previous file is still at %@."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "세션을 저장했습니다. 이전 파일은 %@에 남아 있습니다."
+          }
+        }
+      }
+    },
+    "transcript.models": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Language models"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "언어 모델"
+          }
+        }
+      }
+    },
+    "library.noTranscript": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No transcript"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "기록 없음"
+          }
+        }
+      }
+    },
+    "action.back": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Back"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "뒤로"
+          }
+        }
+      }
+    },
+    "session.duration": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Session duration"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "세션 길이"
+          }
+        }
+      }
+    },
+    "session.opening": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Opening session…"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "세션 여는 중…"
+          }
+        }
+      }
+    },
+    "transcript.processingLatest": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Transcribing. Go to latest message."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "기록 중. 최신 메시지로 이동."
+          }
+        }
+      }
+    },
+    "setup.devicesHelp": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Connects audio between the Agent and caller apps."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Agent와 통화 앱 사이에서 음성을 전달합니다."
+          }
+        }
+      }
+    },
+    "setup.manageAccess": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Manage access"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "권한 설정"
+          }
+        }
+      }
+    },
+    "library.recordingInfo": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Recording information"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "녹음 정보"
+          }
+        }
+      }
+    },
+    "action.more": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "More actions"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "추가 작업"
+          }
+        }
+      }
+    },
+    "library.savedSessions": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Saved sessions"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "저장된 세션"
+          }
+        }
+      }
+    },
+    "library.exporting": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Exporting…"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "내보내는 중…"
+          }
+        }
+      }
+    },
+    "settings.textSize": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Text size"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "텍스트 크기"
+          }
+        }
+      }
+    },
+    "settings.textStandard": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Standard"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "표준"
+          }
+        }
+      }
+    },
+    "settings.textLarger": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Larger"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "크게"
+          }
+        }
+      }
+    },
+    "settings.textLargest": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Largest"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "더 크게"
+          }
+        }
+      }
+    },
+    "session.setupNeeded": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Set up audio to start a session."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "세션을 시작하려면 오디오 설정을 완료하세요."
+          }
+        }
+      }
+    },
+    "session.appsNeeded": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Open the selected Agent and caller apps to start."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "선택한 Agent 앱과 통화 앱을 실행하면 시작할 수 있습니다."
+          }
+        }
+      }
+    },
+    "session.startHelp": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Starting a session also starts recording."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "세션을 시작하면 녹음도 시작됩니다."
+          }
+        }
+      }
+    },
+    "library.recordedAt": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Recording started"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "녹음 시작"
+          }
+        }
+      }
+    },
+    "library.missingAudio": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Missing audio"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "오디오 누락"
+          }
+        }
+      }
+    },
+    "library.gapCount": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Intervals: %@"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@개"
+          }
+        }
+      }
+    },
+    "library.gapTotal": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Total %@"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "총 %@"
+          }
+        }
+      }
+    },
+    "library.gapDetails": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "View intervals"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "구간 보기"
+          }
+        }
+      }
+    },
+    "library.gapPosition": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Position in recording"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "녹음 내 위치"
+          }
+        }
+      }
+    },
+    "library.gapLength": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Duration"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "길이"
+          }
+        }
+      }
+    },
+    "library.gapRange": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@–%@ of %@"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@–%@ / %@개"
+          }
+        }
+      }
+    },
+    "library.previousIntervals": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Previous intervals"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "이전 구간"
+          }
+        }
+      }
+    },
+    "library.nextIntervals": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Next intervals"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "다음 구간"
+          }
+        }
+      }
+    },
+    "library.lessThanMillisecond": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Less than 1 ms"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "1밀리초 미만"
+          }
+        }
+      }
+    },
+    "library.noMissingAudio": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No missing audio recorded"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "기록된 오디오 누락 없음"
+          }
+        }
+      }
+    },
+    "setup.notAllowed": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Not allowed"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "허용 안 됨"
+          }
+        }
+      }
+    },
+    "setup.restricted": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Restricted"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "제한됨"
+          }
+        }
+      }
+    },
+    "session.descriptionLabel": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Description"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "설명"
+          }
+        }
+      }
+    },
+    "library.selectRecording": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Select a recording to view the conversation."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "녹음을 선택하면 대화 기록이 표시됩니다."
+          }
+        }
+      }
+    },
+    "session.busy": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wait for the current session operation to finish, then open the file again."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "현재 세션 처리가 끝난 뒤 파일을 다시 열어 주세요."
+          }
+        }
+      }
+    },
+    "transcript.search": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Find in transcript"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "기록에서 검색"
+          }
+        }
+      }
+    },
+    "transcript.searchClear": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Clear search"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "검색어 지우기"
+          }
+        }
+      }
+    },
+    "transcript.searchPrevious": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Previous match"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "이전 검색 결과"
+          }
+        }
+      }
+    },
+    "transcript.searchNext": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Next match"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "다음 검색 결과"
+          }
+        }
+      }
+    },
+    "transcript.searchNoResults": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No matches"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "검색 결과 없음"
+          }
+        }
+      }
+    },
+    "transcript.searchCount": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$lld of %2$lld"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%2$lld개 중 %1$lld번째"
+          }
+        }
+      }
+    },
+    "transcript.searchClose": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Close transcript search"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "기록 검색 닫기"
+          }
+        }
+      }
+    },
+    "transcript.speechFailure": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Speech recognition could not continue. Check the language settings and try again."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "음성 인식을 계속할 수 없습니다. 언어 설정을 확인하고 다시 시작해 주세요."
+          }
+        }
+      }
+    },
+    "transcript.translationFailure": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Translation could not continue. Check the language settings and try again."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "번역을 계속할 수 없습니다. 언어 설정을 확인하고 다시 시작해 주세요."
+          }
+        }
+      }
+    },
+    "transcript.operationFailure": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The transcript operation could not finish. Try again."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "기록 작업을 완료하지 못했습니다. 다시 시도해 주세요."
+          }
+        }
+      }
+    },
+    "monitor.disconnected": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ (Disconnected)"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ (연결 안 됨)"
+          }
+        }
+      }
+    },
+    "error.details": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Technical details"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "기술 정보"
+          }
+        }
+      }
+    },
+    "setup.requesting": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Requesting access"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "권한 요청 중"
+          }
+        }
+      }
+    },
+    "setup.requested": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Request sent"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "권한 요청 완료"
+          }
+        }
+      }
+    },
+    "setup.accessFailed": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Request failed"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "요청 실패"
+          }
+        }
+      }
+    },
+    "setup.removeFailed": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The audio devices could not be removed."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "오디오 장치를 제거하지 못했습니다."
+          }
+        }
+      }
+    },
+    "settings.currentApplication": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Current: %@"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "현재 선택: %@"
+          }
+        }
+      }
+    },
+    "setup.devicesInstalled": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Audio devices installed"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "오디오 장치 설치됨"
+          }
+        }
+      }
+    },
+    "library.playMix": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Play Mix"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "합본 재생"
+          }
+        }
+      }
+    },
+    "folder.chooseDescription": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Choose where new sessions are saved."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "새 세션을 저장할 위치를 선택하세요."
+          }
+        }
+      }
+    },
+    "folder.use": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Use this folder"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "이 폴더 사용"
+          }
+        }
+      }
+    },
+    "folder.unavailable": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This folder cannot be used. Choose another location."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "이 폴더에 저장할 수 없습니다. 다른 위치를 선택하세요."
           }
         }
       }

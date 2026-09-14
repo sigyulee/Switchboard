@@ -45,8 +45,8 @@ final class AudioEndpoint {
             _ = sb_queue_write(queue, buffer.baseAddress, UInt32(buffer.count / 2), sb_host_time())
         }
     }
-    func packets() throws -> [(samples: [Float], seconds: Double)] {
-        var result: [(samples: [Float], seconds: Double)] = []
+    func packets() throws -> [(samples: [Float], hostTime: UInt64)] {
+        var result: [(samples: [Float], hostTime: UInt64)] = []
         var buffer = [Float](repeating: 0, count: 16_384)
         for _ in 0..<32 {
             var host: UInt64 = 0
@@ -55,7 +55,7 @@ final class AudioEndpoint {
             }
             guard count > 0 else { break }
             let converted = try converter.convert(Array(buffer.prefix(Int(count) * 2)))
-            if !converted.isEmpty { result.append((converted, sb_host_seconds(host))) }
+            if !converted.isEmpty { result.append((converted, host)) }
         }
         return result
     }

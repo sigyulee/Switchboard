@@ -56,6 +56,15 @@ public final class ConversationRecorder: @unchecked Sendable {
 
     /// A recorder owns at most one start attempt, including a failed attempt.
     public func start(root: URL, owner: RecordingOwner) throws -> URL {
+        let id = UUID()
+        let directory = root.appendingPathComponent(id.uuidString + ".mihrecording", isDirectory: true)
+        let title = Date.now.formatted(date: .abbreviated, time: .shortened)
+        return try start(
+            directory: directory, manifest: RecordingManifest(id: id, title: title, owner: owner))
+    }
+
+    /// The session owns the package; the recorder exclusively owns its audio manifest and segments.
+    public func start(directory: URL, manifest: RecordingManifest) throws -> URL {
         try worker.sync {
             switch lifecycle {
             case .ready: break
@@ -72,12 +81,16 @@ public final class ConversationRecorder: @unchecked Sendable {
                 throw RecorderLifecycleError.finished
             }
             do {
-                let id = UUID()
-                let directory = root.appendingPathComponent(
-                    id.uuidString + ".mihrecording", isDirectory: true)
+                try manifest.validate()
+                guard directory.isFileURL,
+                    !FileManager.default.fileExists(
+                        atPath: directory.appendingPathComponent("manifest.json").path)
+                else { throw MediaFailure.invalidPath }
                 try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
-                let title = Date.now.formatted(date: .abbreviated, time: .shortened)
-                let manifest = RecordingManifest(id: id, title: title, owner: owner)
+                guard (try directory.resourceValues(forKeys: [.isSymbolicLinkKey])).isSymbolicLink != true
+                else {
+                    throw MediaFailure.invalidPath
+                }
                 try manifest.save(to: directory)
                 snapshotValue = RecorderSnapshot(manifest: manifest, directory: directory)
                 for side in AudioSide.allCases {
@@ -138,6 +151,20 @@ public final class ConversationRecorder: @unchecked Sendable {
             }
         }
         return true
+    }
+
+    /// Seal accepted audio before a reader starts backfilling. Future audio creates new segments.
+    public func checkpoint(durationFrames: Int64) throws -> RecorderSnapshot {
+        try worker.sync {
+            guard case .recording = lifecycle, var manifest = snapshotValue.manifest,
+                let directory = snapshotValue.directory
+            else { return snapshotValue }
+            for writer in writers.values { try writer.close(manifest: &manifest) }
+            manifest.durationFrames = max(manifest.durationFrames, durationFrames)
+            try manifest.save(to: directory)
+            snapshotValue.manifest = manifest
+            return snapshotValue
+        }
     }
 
     /// Closes admission permanently, drains accepted blocks and replays the first finish result.

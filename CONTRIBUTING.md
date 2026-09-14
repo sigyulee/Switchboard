@@ -9,6 +9,10 @@ bash scripts/check.sh
 bash scripts/build-app.sh release
 ```
 
+Commit source changes before creating a release bundle. Use the debug preview
+command below while iterating on uncommitted changes. See [Versioning](docs/VERSIONING.md)
+for build numbers and source-archive builds.
+
 Format Swift with the repository configuration:
 
 ```sh

@@ -4,6 +4,26 @@ import Foundation
 import Observation
 import RecorderKit
 
+enum PlaybackSource: CaseIterable, Hashable {
+    case mix, caller, agent
+
+    init(side: AudioSide?) {
+        switch side {
+        case nil: self = .mix
+        case .caller: self = .caller
+        case .agent: self = .agent
+        }
+    }
+
+    var side: AudioSide? {
+        switch self {
+        case .mix: nil
+        case .caller: .caller
+        case .agent: .agent
+        }
+    }
+}
+
 @MainActor @Observable final class PlaybackController {
     private var player: AVAudioPlayer?
     var playing = false
@@ -12,13 +32,18 @@ import RecorderKit
     var title = ""
     var waveform: [Float] = []
     private(set) var preparing = false
+    private(set) var source: PlaybackSource = .mix
     private var generation = UUID()
     private var waveformTask: Task<[Float], Error>?
     private var requestTask: Task<Void, Never>?
     private var renderTask: Task<URL, Error>?
 
-    func play(_ item: RecordingItem, side: AudioSide?, onError: @escaping @MainActor (Error) -> Void) {
+    func play(
+        _ item: RecordingItem, side: AudioSide?, at seconds: Double = 0,
+        onError: @escaping @MainActor (Error) -> Void
+    ) {
         stop()
+        source = PlaybackSource(side: side)
         let current = generation
         preparing = true
         requestTask = Task { [weak self] in
@@ -45,7 +70,7 @@ import RecorderKit
                 }
                 try Task.checkCancellation()
                 guard generation == current else { return }
-                try load(url: url, title: item.manifest.title)
+                try load(url: url, title: item.manifest.title, at: seconds)
             } catch is CancellationError {
                 // A different selection or Stop invalidated this request.
             } catch {
@@ -54,13 +79,15 @@ import RecorderKit
         }
     }
 
-    private func load(url: URL, title: String) throws {
+    private func load(url: URL, title: String, at seconds: Double) throws {
         let newPlayer = try AVAudioPlayer(contentsOf: url)
         newPlayer.currentDevice = nil
         guard newPlayer.prepareToPlay() else { throw AudioFailure(operation: .errorPlayback, code: -1) }
         player = newPlayer
         duration = newPlayer.duration
         self.title = title
+        newPlayer.currentTime = seconds.isFinite ? max(0, min(duration, seconds)) : 0
+        position = newPlayer.currentTime
         playing = newPlayer.play()
         let current = generation
         let task = Task.detached(priority: .utility) { try Waveform.read(url: url) }
@@ -78,6 +105,7 @@ import RecorderKit
         playing = player.isPlaying
     }
     func seek(_ value: Double) {
+        guard value.isFinite else { return }
         player?.currentTime = max(0, min(duration, value))
         refresh()
     }
@@ -85,6 +113,16 @@ import RecorderKit
         position = player?.currentTime ?? 0
         playing = player?.isPlaying ?? false
     }
+    func stopAndWait() async {
+        let request = requestTask
+        let render = renderTask
+        let waveform = waveformTask
+        stop()
+        await request?.value
+        _ = try? await render?.value
+        _ = try? await waveform?.value
+    }
+
     func stop() {
         requestTask?.cancel()
         requestTask = nil
@@ -101,5 +139,6 @@ import RecorderKit
         duration = 0
         playing = false
         title = ""
+        source = .mix
     }
 }

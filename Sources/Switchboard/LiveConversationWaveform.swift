@@ -1,23 +1,30 @@
 import SwiftUI
 
 struct LiveConversationWaveform: View {
+    @Environment(\.appTypography) private var typography
     @Environment(\.appStrings) private var strings
     let caller: [Float]
     let agent: [Float]
+    var callerName: String? = nil
+    var agentName: String? = nil
 
     var body: some View {
-        VStack(spacing: 8) {
-            row(strings(.waveformCaller), samples: caller, color: .teal)
-            row("Agent", samples: agent, color: .blue)
+        Grid(alignment: .leading, horizontalSpacing: 12, verticalSpacing: 8) {
+            row(strings(.waveformCaller), application: callerName, samples: caller, color: .teal)
+            row("Agent", application: agentName, samples: agent, color: .blue)
         }
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(strings(.waveformLive))
     }
 
-    private func row(_ title: String, samples: [Float], color: Color) -> some View {
-        HStack(spacing: 12) {
-            Text(title).font(.system(size: 14, weight: .medium))
-                .foregroundStyle(.secondary).frame(width: 44, alignment: .leading)
+    private func row(_ title: String, application: String?, samples: [Float], color: Color) -> some View {
+        GridRow {
+            VStack(alignment: .leading, spacing: 2) {
+                Text(title).font(typography.caption.weight(.medium))
+                if let application {
+                    Text(application).font(typography.caption).lineLimit(1).help(application)
+                }
+            }.foregroundStyle(.secondary).frame(maxWidth: 120, alignment: .leading)
             Canvas { context, size in
                 let center = size.height / 2
                 var baseline = Path()

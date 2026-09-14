@@ -18,7 +18,7 @@ bash scripts/check-toolchain.sh
 # Compile the production queue directly without opening audio devices.
 check_directory="$(mktemp -d "${TMPDIR:-/tmp}/switchboard-queue-check.XXXXXX")"
 trap 'rm -rf "$check_directory"' EXIT
-xcrun --sdk macosx clang -std=c11 -arch arm64 -mmacosx-version-min=27.0 \
+xcrun --sdk macosx clang -std=c11 -arch arm64 -mmacosx-version-min=26.0 \
     -O1 -g -Wall -Wextra -Werror -fno-omit-frame-pointer \
     "${sanitizer_flags[@]}" -fno-sanitize-recover=all -pthread \
     -I Sources/AudioRealtime/include \

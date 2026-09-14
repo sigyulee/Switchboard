@@ -39,6 +39,7 @@ import SwiftUI
 
 @main struct SwitchboardApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) private var delegate
+    @FocusedValue(\.appFindController) private var findController
     @ViewState private var model = AppModel(
         preview: CommandLine.arguments.contains("--preview")
             || Bundle.main.object(forInfoDictionaryKey: "SwitchboardPreview") as? Bool == true)
@@ -49,15 +50,21 @@ import SwiftUI
                 .environment(\.appStrings, model.strings)
                 .environment(\.locale, model.strings.locale)
                 .task { if delegate.attach(model) { model.boot() } }
+                .onOpenURL { model.openSession(at: $0) }
         }
-        .defaultSize(width: 780, height: 720)
+        .defaultSize(width: 1120, height: 760)
         .windowResizability(.contentMinSize)
         .commands {
             CommandGroup(after: .textEditing) {
-                Button(strings(.librarySearch)) { model.findRecordings() }
-                    .keyboardShortcut("f", modifiers: .command)
+                Button(strings(findController?.transcriptOwner == nil ? .librarySearch : .transcriptSearch)) {
+                    if findController?.requestTranscriptFind() != true { model.findRecordings() }
+                }
+                .keyboardShortcut("f", modifiers: .command)
             }
             CommandGroup(after: .newItem) {
+                Button(strings(.actionOpen)) { model.chooseSessionToOpen() }
+                    .keyboardShortcut("o", modifiers: .command)
+                    .disabled(!model.canOpenSessionFile)
                 Button(model.isRecording ? strings(.actionStopRecording) : strings(.actionStartRecording)) {
                     if model.isRecording {
                         Task { await model.stopRecording() }
@@ -67,8 +74,7 @@ import SwiftUI
                 }
                 .keyboardShortcut("r", modifiers: [.command, .shift])
                 .disabled(
-                    model.preview || model.starting || model.pausing
-                        || (!model.isRecording && (!model.audio.callerReady || !model.phoneRunning))
+                    model.preview || model.session.busy || !model.session.active
                 )
             }
         }
@@ -76,12 +82,18 @@ import SwiftUI
             Group {
                 if model.language == nil {
                     LanguageChoiceView(choose: model.chooseLanguage)
+                } else if model.needsRecordingFolderSetup {
+                    RecordingFolderSetupView(
+                        folder: model.recordingRoot, busy: model.recordingFolderBusy,
+                        issue: model.recordingFolderIssue, choose: model.chooseRecordingFolder,
+                        confirm: { model.useRecordingFolder(model.recordingRoot) })
                 } else {
-                    SettingsView(model: model).frame(width: 540).padding(24)
+                    SettingsSurface(width: 620) { SettingsView(model: model) }
                 }
             }
             .environment(\.appStrings, model.strings)
             .environment(\.locale, model.strings.locale)
+            .environment(\.appTypography, AppTypography(textSize: model.textSize))
         }
     }
 }

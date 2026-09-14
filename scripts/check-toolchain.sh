@@ -25,10 +25,10 @@ if sys.version_info.major != 3:
     sys.exit("Toolchain check failed: Python 3 is required.")
 sdk = re.match(r"^(\d+)\.(\d+)", sys.argv[1])
 swift = re.search(r"Swift version (\d+)\.(\d+)", sys.argv[2])
-if not sdk or tuple(map(int, sdk.groups())) < (27, 0):
-    sys.exit("Toolchain check failed: select a macOS 27 or newer SDK with xcode-select.")
-if not swift or tuple(map(int, swift.groups())) < (6, 4):
-    sys.exit("Toolchain check failed: select Swift 6.4 or newer with xcode-select.")
+if not sdk or tuple(map(int, sdk.groups())) < (26, 0):
+    sys.exit("Toolchain check failed: select a macOS 26 or newer SDK with xcode-select.")
+if not swift or tuple(map(int, swift.groups())) < (6, 2):
+    sys.exit("Toolchain check failed: select Swift 6.2 or newer with xcode-select.")
 print(f"Toolchain ready: Darwin arm64, macOS SDK {sys.argv[1]}, "
       f"Swift {'.'.join(swift.groups())}, Python {sys.version.split()[0]}.")
 PY

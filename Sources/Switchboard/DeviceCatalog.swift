@@ -26,6 +26,7 @@ struct AudioFailure: Error, LocalizedError, Sendable {
 enum AudioDevices {
     static let callerUID = "MIHCaller_UID"
     static let replyUID = "MIHReply_UID"
+    static let agentInputUID = "SwitchboardAgent_UID"
     static let system = AudioObjectID(kAudioObjectSystemObject)
 
     static func address(

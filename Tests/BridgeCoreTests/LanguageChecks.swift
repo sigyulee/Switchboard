@@ -2,6 +2,21 @@ import BridgeCore
 import Foundation
 
 struct LanguageChecks {
+    func savedRoutesIgnoreRetiredConfirmation() throws {
+        let agent = try ApplicationIdentity(
+            bundleIdentifier: "example.agent", bundleURL: URL(fileURLWithPath: "/tmp/Agent.app"),
+            name: "Agent")
+        let caller = try ApplicationIdentity(
+            bundleIdentifier: "example.caller", bundleURL: URL(fileURLWithPath: "/tmp/Caller.app"),
+            name: "Caller")
+        let expected = try RouteProfile(agent: agent, caller: caller)
+        var old = try JSONSerialization.jsonObject(with: JSONEncoder().encode(expected)) as! [String: Any]
+        old["callerDevicesConfirmed"] = false
+        let restored = try JSONDecoder().decode(
+            RouteProfile.self, from: JSONSerialization.data(withJSONObject: old))
+        try expect(restored == expected)
+    }
+
     func firstLaunchRequiresChoiceAndSavesIt() throws {
         let name = "SwitchboardTests.\(UUID().uuidString)"
         let defaults = UserDefaults(suiteName: name)!
@@ -16,24 +31,4 @@ struct LanguageChecks {
         try expect(ApplicationLanguage.saved(in: defaults) == .english)
     }
 
-    func migrationPreservesChoicesWithoutCopyingPermissions() throws {
-        let name = "SwitchboardTests.\(UUID().uuidString)"
-        let defaults = UserDefaults(suiteName: name)!
-        defer { defaults.removePersistentDomain(forName: name) }
-        defaults.set(false, forKey: "speakerFallback")
-        PreferenceMigration.apply(
-            to: defaults,
-            legacy: [
-                "monitorUID": "headphones", "speakerFallback": true,
-                "captureAccessBuild": "old-code-hash", "automaticRecording": true,
-            ], recordingDirectory: URL(fileURLWithPath: "/tmp/existing-recordings"))
-        try expect(defaults.string(forKey: "monitorUID") == "headphones")
-        try expect(!defaults.bool(forKey: "speakerFallback"))
-        try expect(defaults.object(forKey: "captureAccessBuild") == nil)
-        try expect(defaults.object(forKey: "automaticRecording") == nil)
-        try expect(ApplicationLanguage.saved(in: defaults) == nil)
-        try expect(defaults.string(forKey: "recordingRoot") == "/tmp/existing-recordings")
-        PreferenceMigration.apply(to: defaults, legacy: ["monitorUID": "different"], recordingDirectory: nil)
-        try expect(defaults.string(forKey: "monitorUID") == "headphones")
-    }
 }

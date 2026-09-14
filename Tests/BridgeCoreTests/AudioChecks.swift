@@ -5,6 +5,17 @@ import Foundation
 import RecorderKit
 
 struct AudioChecks {
+    func replacementInputLeasePreservesOwnershipAndExternalChoices() throws {
+        let old = InputLease(ownedUID: "MIHCaller_UID", previousUID: "microphone")
+        let transferred = old.retargeted(to: "SwitchboardAgent_UID", currentUID: "MIHCaller_UID")
+        try expect(transferred?.ownedUID == "SwitchboardAgent_UID")
+        try expect(transferred?.restoration(currentUID: "SwitchboardAgent_UID") == "microphone")
+        try expect(
+            old.retargeted(to: "SwitchboardAgent_UID", currentUID: "external")?.restorationUID == "external")
+        try expect(old.retargeted(to: "SwitchboardAgent_UID", currentUID: "SwitchboardAgent_UID") == nil)
+        try expect(transferred?.restoration(currentUID: "external") == nil)
+    }
+
     func queueWrapAndOverflow() throws {
         guard let queue = sb_queue_create(4) else { throw CheckFailure(description: "queue allocation") }
         defer { sb_queue_destroy(queue) }
@@ -52,13 +63,13 @@ struct AudioChecks {
         let a = [Float](repeating: 0.25, count: 48_000 * 2)
         let b = [Float](repeating: -0.1, count: 48_000 * 2)
         try expect(recorder.append(side: .caller, samples: a, frame: 0))
-        try expect(recorder.append(side: .chrome, samples: b, frame: 48_000))
+        try expect(recorder.append(side: .agent, samples: b, frame: 48_000))
         _ = try recorder.finish(durationFrames: 96_000)
         let item = try RecordingRenderer.finalize(directory: directory)
         try expect(item.manifest.durationFrames == 96_000)
         try expect(item.manifest.segments.count == 2)
         try expect(
-            item.manifest.gaps.contains { $0.side == .chrome && $0.startFrame == 0 && $0.frames == 48_000 })
+            item.manifest.gaps.contains { $0.side == .agent && $0.startFrame == 0 && $0.frames == 48_000 })
         let mix = try AVAudioFile(forReading: item.mixURL)
         try expect(abs(mix.length - 96_000) < 2048)
         let source = root.appendingPathComponent("caller.wav")
