@@ -11,7 +11,10 @@ struct TranscriptMessages: View {
     let entries: [TranscriptEntry]
     var seek: ((Double) -> Void)? = nil
     var isProcessing = false
-    @ViewState private var followsLatest = true
+    @ViewState private var follow = TranscriptScrollFollow()
+    @ViewState private var latestRequest = UUID()
+    @ViewState private var scrollPhase: ScrollPhase = .idle
+    @ViewState private var viewportHeight: CGFloat = 0
     @ViewState private var visibleCount = 100
     @ViewState private var searchVisible = false
     @ViewState private var query = ""
@@ -31,6 +34,14 @@ struct TranscriptMessages: View {
         let entries: [TranscriptEntry]
         let query: String
         let visible: Bool
+    }
+
+    private struct ScrollMetrics: Equatable {
+        let contentHeight: CGFloat
+        let visibleBottom: CGFloat
+        let viewportHeight: CGFloat
+        let offset: CGFloat
+        var atBottom: Bool { contentHeight - visibleBottom <= 32 }
     }
 
     private struct ScrollRequest: Equatable {
@@ -80,6 +91,7 @@ struct TranscriptMessages: View {
                 LazyVStack(spacing: 16) {
                     if entries.count > visibleCount {
                         IconButton("chevron.up", label: strings(.transcriptEarlierMessages)) {
+                            follow.showEarlier()
                             visibleCount = min(entries.count, visibleCount + 100)
                             findController.focusTranscript(owner: transcriptID)
                         }
@@ -97,18 +109,78 @@ struct TranscriptMessages: View {
                             focus: { findController.focusTranscript(owner: transcriptID) }
                         ).id(entry.id)
                     }
-                    Color.clear.frame(height: 1).id("latest")
+                    Color.clear.frame(height: 1)
+                        .background {
+                            GeometryReader { geometry in
+                                Color.clear.preference(
+                                    key: TranscriptTailFrame.self,
+                                    value: geometry.frame(in: .named(TranscriptTailFrame.coordinateSpace)))
+                            }
+                        }
+                        .id("latest")
                 }.padding(24)
+            }
+            .defaultScrollAnchor(
+                follow.shouldFollow(searchVisible: searchVisible) ? .bottom : nil, for: .sizeChanges
+            )
+            .coordinateSpace(name: TranscriptTailFrame.coordinateSpace)
+            .onPreferenceChange(TranscriptTailFrame.self) { frame in
+                if !frame.isNull, viewportHeight > 0, frame.maxY > viewportHeight + 1,
+                    follow.shouldFollow(searchVisible: searchVisible)
+                {
+                    latestRequest = UUID()
+                }
             }
             .focusable().focusEffectDisabled().focused($contentFocused)
             .accessibilityLabel(strings(.libraryTranscript))
-            .onScrollGeometryChange(for: Bool.self) { geometry in
-                geometry.contentSize.height - geometry.visibleRect.maxY <= 32
-            } action: { _, atBottom in
-                if !searchVisible { followsLatest = atBottom }
+            .onScrollGeometryChange(for: ScrollMetrics.self) { geometry in
+                ScrollMetrics(
+                    contentHeight: geometry.contentSize.height,
+                    visibleBottom: geometry.visibleRect.maxY,
+                    viewportHeight: geometry.containerSize.height,
+                    offset: min(
+                        max(0, geometry.visibleRect.minY),
+                        max(0, geometry.contentSize.height - geometry.visibleRect.height)))
+            } action: { previous, metrics in
+                viewportHeight = metrics.viewportHeight
+                if !searchVisible, scrollPhase == .interacting,
+                    previous.viewportHeight == metrics.viewportHeight
+                {
+                    follow.userScrollMoved(
+                        from: previous.offset, to: metrics.offset, atBottom: metrics.atBottom)
+                }
+                // Content growth and layout changes must never look like user scrolling.
+                if follow.shouldFollow(searchVisible: searchVisible) && !metrics.atBottom
+                    && (previous.contentHeight != metrics.contentHeight
+                        || previous.viewportHeight != metrics.viewportHeight)
+                {
+                    latestRequest = UUID()
+                }
             }
-            .onChange(of: entries) {
-                if followsLatest && !searchVisible { proxy.scrollTo("latest", anchor: .bottom) }
+            .onScrollPhaseChange { _, phase, context in
+                scrollPhase = phase
+                switch phase {
+                case .tracking, .interacting:
+                    follow.userScrollBegan()
+                case .idle:
+                    follow.userScrollEnded(
+                        atBottom: !searchVisible
+                            && context.geometry.contentSize.height - context.geometry.visibleRect.maxY
+                                <= 32
+                    )
+                    if follow.shouldFollow(searchVisible: searchVisible) { latestRequest = UUID() }
+                default:
+                    break
+                }
+            }
+            .onChange(of: entries) { latestRequest = UUID() }
+            .onChange(of: searchVisible) { latestRequest = UUID() }
+            .task(id: latestRequest) {
+                guard follow.shouldFollow(searchVisible: searchVisible) else { return }
+                // Wait for the new message or translation to participate in layout.
+                await Task.yield()
+                guard !Task.isCancelled, follow.shouldFollow(searchVisible: searchVisible) else { return }
+                proxy.scrollTo("latest", anchor: .bottom)
             }
             .task(id: scrollRequest) {
                 guard let request = scrollRequest else { return }
@@ -121,9 +193,10 @@ struct TranscriptMessages: View {
                 rangeRevealID = request.generation
             }
             .overlay(alignment: .bottom) {
-                if isProcessing || (!followsLatest && !entries.isEmpty) {
+                if isProcessing || (!follow.followsLatest && !entries.isEmpty) {
                     TranscriptLatestButton(isProcessing: isProcessing) {
                         findController.focusTranscript(owner: transcriptID)
+                        follow.resume()
                         withAnimation(reduceMotion ? nil : .easeOut(duration: 0.2)) {
                             proxy.scrollTo("latest", anchor: .bottom)
                         }

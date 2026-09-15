@@ -22,6 +22,7 @@ private func require(_ condition: @autoclosure () -> Bool, _ message: String) th
             ("old matches expand the visible transcript suffix", olderMessages),
             ("cancelled matching discards partial results", cancellation),
             ("contextual find switches panes and releases stale owners", contextualFind),
+            ("content growth preserves following while user review pauses it", scrollFollowing),
         ]
         var failures = 0
         for (name, check) in checks {
@@ -35,6 +36,43 @@ private func require(_ condition: @autoclosure () -> Bool, _ message: String) th
         }
         if failures > 0 { exit(1) }
         print("\(checks.count) transcript search checks passed.")
+    }
+
+    private static func scrollFollowing() throws {
+        var state = TranscriptScrollFollow()
+        state.userScrollEnded(atBottom: false)
+        try require(state.shouldFollow(searchVisible: false), "Content growth detached the latest message")
+        try require(!state.shouldFollow(searchVisible: true), "Search must not be interrupted by new text")
+        state.userScrollBegan()
+        try require(!state.shouldFollow(searchVisible: false), "A user gesture was overridden")
+        state.userScrollMoved(from: 100, to: 150, atBottom: true)
+        state.userScrollEnded(atBottom: false)
+        try require(
+            state.shouldFollow(searchVisible: false), "Growth during downward scrolling disabled follow")
+        state.userScrollBegan()
+        state.userScrollMoved(from: 150, to: 80, atBottom: false)
+        state.userScrollEnded(atBottom: false)
+        try require(!state.shouldFollow(searchVisible: false), "Reviewing earlier text resumed following")
+        state.userScrollBegan()
+        state.userScrollMoved(from: 80, to: 200, atBottom: true)
+        state.userScrollEnded(atBottom: false)
+        try require(
+            state.shouldFollow(searchVisible: false), "Reaching the bottom before new text did not resume")
+        state.userScrollBegan()
+        try require(!state.shouldFollow(searchVisible: true), "Search did not pause follow")
+        state.userScrollEnded(atBottom: false)
+        try require(
+            !state.userIsScrolling && state.shouldFollow(searchVisible: false),
+            "Search retained a completed gesture")
+        state.userScrollBegan()
+        state.userScrollMoved(from: 200, to: 185, atBottom: true)
+        state.userScrollEnded(atBottom: false)
+        try require(!state.shouldFollow(searchVisible: false), "Upward momentum snapped back to latest")
+        state.showEarlier()
+        try require(!state.shouldFollow(searchVisible: false), "Loading older messages kept following")
+        state.resume()
+        state.userScrollEnded(atBottom: false)
+        try require(state.shouldFollow(searchVisible: false), "The latest button did not restore following")
     }
 
     private static func koreanOccurrences() throws {

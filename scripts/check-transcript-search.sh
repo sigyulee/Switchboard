@@ -27,7 +27,7 @@ subprocess.run([
     'xcrun', 'swiftc', '-swift-version', '6', '-parse-as-library',
     '-target', 'arm64-apple-macosx26.0', '-module-cache-path', '.build/transcript-search-clang-cache',
     '-I', str(binary / 'Modules'),
-    'Sources/Switchboard/AppFindController.swift', 'Sources/Switchboard/TranscriptSearch.swift',
+    'Sources/Switchboard/AppFindController.swift', 'Sources/Switchboard/TranscriptScrollFollow.swift','Sources/Switchboard/TranscriptSearch.swift',
     'Tests/TranscriptSearchChecks/SearchChecks.swift', *map(str, objects), '-o', str(executable),
 ], check=True)
 subprocess.run([str(executable)], check=True)

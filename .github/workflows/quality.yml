@@ -80,6 +80,8 @@ jobs:
         run: bash scripts/check-application-catalog.sh
       - name: Check pipeline errors and pause ownership
         run: bash scripts/check-pipeline.sh release
+      - name: Check transcript follow layout
+        run: bash scripts/check-transcript-scroll.sh release
       - name: Check continuous transcription audio
         run: bash scripts/check-transcript-pcm.sh release
 

@@ -25,6 +25,7 @@ bash scripts/check-library-layout.sh
 bash scripts/check-build-version.sh
 bash scripts/check-transcript-search.sh
 bash scripts/check-transcript-search-layout.sh
+bash scripts/check-transcript-scroll.sh
 bash scripts/check-transcript-controls.sh
 bash scripts/check-transcript-pcm.sh
 bash scripts/check-driver.sh

@@ -87,7 +87,7 @@ struct LibraryView: View {
         let visibleDrafts = drafts
         let visibleItems = items
         let selectedID = model.selectedRecordingID
-        return List(selection: Binding(get: { model.selectedRecordingID }, set: selectRecording)) {
+        return List(selection: Binding(get: { model.selectedRecordingID }, set: { selectRecording($0) })) {
             if !visibleDrafts.isEmpty {
                 sectionHeader(.sessionUnfinished, first: true)
                 ForEach(Array(visibleDrafts.enumerated()), id: \.element.manifest.id) { index, draft in
