@@ -10,12 +10,10 @@ struct AppAudioTarget: Equatable, Sendable {
 
 @MainActor enum ApplicationCatalog {
     private static let suggestions: [(identifier: String, forAgent: Bool, fallbackPaths: [String])] = [
-        (
-            "com.openai.chat", true,
-            ["/Applications/ChatGPT.app", "/Applications/ChatGPT Classic.app"]
-        ),
+        ("com.openai.codex", true, ["/Applications/ChatGPT.app"]),
         ("com.google.Chrome", true, ["/Applications/Google Chrome.app"]),
         ("com.apple.mobilephone", false, ["/System/Applications/Phone.app"]),
+        ("com.hnc.Discord", false, ["/Applications/Discord.app"]),
     ]
 
     static func identity(at url: URL) -> ApplicationIdentity? {
@@ -41,19 +39,38 @@ struct AppAudioTarget: Equatable, Sendable {
     }
 
     static func isSuggested(_ application: ApplicationIdentity, forAgent: Bool) -> Bool {
-        isUserFacing(application)
-            && suggestions.contains { $0.identifier == application.id && $0.forAgent == forAgent }
+        guard
+            isUserFacing(application)
+                && suggestions.contains(where: { $0.identifier == application.id && $0.forAgent == forAgent })
+        else { return false }
+        guard application.id == "com.openai.codex" else { return true }
+        // Current ChatGPT and older Codex installations share this identifier.
+        // Require bundle metadata; a renamed .app or saved picker label is insufficient.
+        guard let bundle = Bundle(url: application.bundleURL), bundle.bundleIdentifier == application.id,
+            bundle.object(forInfoDictionaryKey: "CFBundleExecutable") as? String == "ChatGPT"
+        else { return false }
+        let name =
+            (bundle.object(forInfoDictionaryKey: "CFBundleDisplayName") as? String)
+            ?? (bundle.object(forInfoDictionaryKey: "CFBundleName") as? String)
+        return name == "ChatGPT"
     }
 
     static func choices(including selected: [ApplicationIdentity]) -> [ApplicationIdentity] {
+        choices(including: selected) { identifier, fallbackPaths in
+            let registered = NSWorkspace.shared.urlForApplication(withBundleIdentifier: identifier)
+            return [registered].compactMap { $0 } + fallbackPaths.map { URL(fileURLWithPath: $0) }
+        }
+    }
+
+    static func choices(
+        including selected: [ApplicationIdentity],
+        applicationURLs: (_ identifier: String, _ fallbackPaths: [String]) -> [URL]
+    ) -> [ApplicationIdentity] {
         let knownInstalled = suggestions.compactMap { suggestion -> ApplicationIdentity? in
-            if let application = installed(suggestion.identifier), isUserFacing(application) {
-                return application
-            }
             // Registered discovery can be unavailable. A filename alone never establishes identity.
-            return suggestion.fallbackPaths.lazy.compactMap {
-                identity(at: URL(fileURLWithPath: $0), matching: suggestion.identifier)
-            }.first(where: isUserFacing)
+            applicationURLs(suggestion.identifier, suggestion.fallbackPaths).lazy.compactMap {
+                identity(at: $0, matching: suggestion.identifier)
+            }.first { isSuggested($0, forAgent: suggestion.forAgent) }
         }
         return choices(installed: knownInstalled, including: selected)
     }

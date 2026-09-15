@@ -7,6 +7,12 @@
 
 ChatGPT 데스크톱 앱 또는 웹의 **gpt-live-1**로 검증했으며, 개인적으로 추천합니다.
 
+## 데모
+
+https://github.com/user-attachments/assets/91bf5e9e-8db5-485c-8639-07a152ea269a
+
+한국어 자막이 포함된 통화 녹음 재생 데모입니다.
+
 ## 기능
 
 - Agent 앱과 통화 앱 선택
@@ -36,6 +42,12 @@ ChatGPT 데스크톱 앱 또는 웹의 **gpt-live-1**로 검증했으며, 개인
 ```sh
 bash scripts/check.sh
 bash scripts/build-app.sh release
+```
+
+다운로드한 소스 압축 파일에서 빌드할 때는 양의 정수로 빌드 번호를 지정합니다.
+
+```sh
+SWITCHBOARD_BUILD_NUMBER=1 bash scripts/build-app.sh release
 ```
 
 앱은 `build/Switchboard.app`에 생성됩니다. DMG 생성:
@@ -83,4 +95,4 @@ Agent 앱에서 **기본값(Default)**만 선택할 수 있다면 그대로 두�
 열 수 있으며, 세션 파일로 내보내면 `.switchboard` 형식으로 저장됩니다.
 
 [설치](LOCAL-INSTALL.md) · [구조](ARCHITECTURE.md) · [테스트](TESTING.md) ·
-[버전 관리](VERSIONING.md) · [기여](../CONTRIBUTING.md)
+[버전 관리](VERSIONING.md)

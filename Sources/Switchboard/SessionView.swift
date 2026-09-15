@@ -59,7 +59,7 @@ struct SessionHomeView: View {
                 .fixedSize()
                 .disabled(
                     model.installing || model.starting || (!model.requiresSetup && !model.canStartSession))
-            }
+            }.padding(.horizontal, 20)
         }.frame(maxWidth: 720).frame(maxWidth: .infinity)
     }
 

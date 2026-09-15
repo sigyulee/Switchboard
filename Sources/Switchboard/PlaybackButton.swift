@@ -10,14 +10,13 @@ struct PlaybackButton: View {
         SplitActionButton(
             title: strings(preparing ? .libraryPreparing : source == .mix ? .libraryPlay : source.title),
             systemImage: "play.fill", menuLabel: strings(.librarySources),
-            action: { play(source) }
-        ) {
-            Picker(strings(.librarySources), selection: Binding(get: { source }, set: { play($0) })) {
-                ForEach(PlaybackSource.allCases, id: \.self) { choice in
-                    Text(strings(choice.title)).tag(choice)
-                }
-            }.pickerStyle(.inline).labelsHidden()
-        }
+            action: { play(source) },
+            options: PlaybackSource.allCases.map { choice in
+                SplitMenuOption(
+                    id: choice.title.rawValue, title: strings(choice.title),
+                    selected: source == choice, action: { play(choice) })
+            }
+        )
         .accessibilityValue(strings(source.title))
     }
 }

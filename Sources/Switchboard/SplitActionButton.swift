@@ -1,12 +1,13 @@
+import AppKit
 import SwiftUI
 
-struct SplitActionButton<Options: View>: View {
+struct SplitActionButton: View {
     @Environment(\.appTypography) private var typography
     let title: String
     let systemImage: String
     let menuLabel: String
     let action: () -> Void
-    @ViewBuilder var options: Options
+    let options: [SplitMenuOption]
     private var height: CGFloat { max(44, typography.controlSide) }
 
     var body: some View {
@@ -20,15 +21,12 @@ struct SplitActionButton<Options: View>: View {
             }.buttonStyle(SplitSegmentStyle())
             Rectangle().fill(Color(nsColor: .separatorColor))
                 .frame(width: 1, height: height - 20).accessibilityHidden(true)
-            Menu {
-                options
-            } label: {
-                Label(menuLabel, systemImage: "chevron.down").labelStyle(.iconOnly)
-                    .font(typography.body.weight(.medium))
-                    .frame(width: height, height: height)
-                    .contentShape(Rectangle())
-            }.menuStyle(.button).buttonStyle(SplitSegmentStyle()).menuIndicator(.hidden)
-                .accessibilityLabel(menuLabel).help(menuLabel)
+            SplitMenu(
+                label: menuLabel, side: height,
+                pointSize: NSFont.preferredFont(forTextStyle: .body).pointSize * typography.textSize.scale,
+                options: options
+            )
+            .frame(width: height, height: height)
         }
         .buttonBorderShape(.roundedRectangle(radius: 0))
         .background(.quaternary, in: Capsule())

@@ -7,6 +7,12 @@ both sides, adjust their volumes independently, and record the conversation.
 
 Verified with **gpt-live-1** on ChatGPT Desktop or Web. I personally recommend it.
 
+## Demo
+
+https://github.com/user-attachments/assets/91bf5e9e-8db5-485c-8639-07a152ea269a
+
+Recorded-call replay with Korean subtitles.
+
 ## Features
 
 - Select the Agent and calling applications.
@@ -36,6 +42,12 @@ Mac. Download missing models from the language controls in the session.
 ```sh
 bash scripts/check.sh
 bash scripts/build-app.sh release
+```
+
+When building a downloaded source archive, supply a positive build number:
+
+```sh
+SWITCHBOARD_BUILD_NUMBER=1 bash scripts/build-app.sh release
 ```
 
 The app is generated at `build/Switchboard.app`. To create a DMG:
@@ -85,5 +97,4 @@ files. **Export session file** creates a complete copy of that package. Older
 `.mihrecording` files remain readable and export as `.switchboard` session files.
 
 See [installation](docs/LOCAL-INSTALL.md), [architecture](docs/ARCHITECTURE.md),
-[testing](docs/TESTING.md), [versioning](docs/VERSIONING.md), and
-[contributing](CONTRIBUTING.md).
+[testing](docs/TESTING.md), and [versioning](docs/VERSIONING.md).

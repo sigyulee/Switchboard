@@ -20,6 +20,7 @@ func durationText(_ seconds: Double) -> String { String(format: "%.0f", seconds)
 @MainActor @Observable final class ScrollFixture {
     var entries: [TranscriptEntry] = []
     var tail = CGRect.null
+    var processing = false
     let id = UUID()
     let find = AppFindController()
     func append() {
@@ -35,7 +36,7 @@ func durationText(_ seconds: Double) -> String { String(format: "%.0f", seconds)
 private struct ScrollFixtureView: View {
     let model: ScrollFixture
     var body: some View {
-        TranscriptMessages(transcriptID: model.id, entries: model.entries)
+        TranscriptMessages(transcriptID: model.id, entries: model.entries, isProcessing: model.processing)
             .environment(model.find)
             .onPreferenceChange(TranscriptTailFrame.self) { frame in model.tail = frame }
     }
@@ -56,7 +57,8 @@ private struct ScrollFixtureView: View {
     static func requireBottom(_ model: ScrollFixture, in view: NSView, _ reason: String) {
         let frame = model.tail
         precondition(!frame.isNull, "The latest message was not laid out")
-        let gap = view.bounds.height - frame.maxY
+        let availableHeight = view.bounds.height - (model.processing ? 56 : 0)
+        let gap = availableHeight - frame.maxY
         precondition(gap >= -2 && gap <= 34, "\(reason): actual tail gap \(gap)")
     }
     static func main() {
@@ -83,6 +85,14 @@ private struct ScrollFixtureView: View {
             model.entries[model.entries.count - 1].translationStatus = .translated
             settle(host)
             requireBottom(model, in: host, "Delayed translation")
+        }
+        for processing in [true, false] {
+            model.processing = processing
+            settle(host)
+            requireBottom(model, in: host, "Processing footer transition")
+            model.append()
+            settle(host)
+            requireBottom(model, in: host, "Message with processing footer")
         }
         print(
             "PASS live transcript stays at bottom after messages and delayed translations; no windows displayed."

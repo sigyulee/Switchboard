@@ -192,18 +192,25 @@ struct TranscriptMessages: View {
                 guard !Task.isCancelled, scrollRequest == request else { return }
                 rangeRevealID = request.generation
             }
+            .safeAreaInset(edge: .bottom, spacing: 0) {
+                if isProcessing { latestButton(proxy: proxy) }
+            }
             .overlay(alignment: .bottom) {
-                if isProcessing || (!follow.followsLatest && !entries.isEmpty) {
-                    TranscriptLatestButton(isProcessing: isProcessing) {
-                        findController.focusTranscript(owner: transcriptID)
-                        follow.resume()
-                        withAnimation(reduceMotion ? nil : .easeOut(duration: 0.2)) {
-                            proxy.scrollTo("latest", anchor: .bottom)
-                        }
-                    }.padding(12)
+                if !isProcessing && !follow.followsLatest && !entries.isEmpty {
+                    latestButton(proxy: proxy)
                 }
             }
         }
+    }
+
+    private func latestButton(proxy: ScrollViewProxy) -> some View {
+        TranscriptLatestButton(isProcessing: isProcessing) {
+            findController.focusTranscript(owner: transcriptID)
+            follow.resume()
+            withAnimation(reduceMotion ? nil : .easeOut(duration: 0.2)) {
+                proxy.scrollTo("latest", anchor: .bottom)
+            }
+        }.padding(12)
     }
 
     private var searchBar: some View {

@@ -140,6 +140,7 @@ struct SettingsView: View {
     @Environment(\.appStrings) private var strings
     @Bindable var model: AppModel
     @Environment(\.dismiss) private var dismiss
+    @ViewState private var showSetup = false
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
             HStack {
@@ -192,8 +193,7 @@ struct SettingsView: View {
                 strings(.settingsVersion),
                 value: AppBuildVersion(bundle: .main).display)
             Button(strings(.settingsSetup)) {
-                dismiss()
-                model.showSetup = true
+                showSetup = true
             }
             DisclosureGroup(strings(.settingsDevices)) {
                 VStack(alignment: .leading, spacing: 12) {
@@ -212,6 +212,9 @@ struct SettingsView: View {
                 }
             }.disclosureGroupStyle(FullRowDisclosureStyle())
         }.font(typography.body)
+            .sheet(isPresented: $showSetup) {
+                SettingsSurface(width: 600, maximumHeight: 620) { SetupView(model: model) }
+            }
     }
 }
 
