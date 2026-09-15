@@ -19,8 +19,6 @@ struct SplitActionButton: View {
                     .frame(minHeight: height)
                     .contentShape(Rectangle())
             }.buttonStyle(SplitSegmentStyle())
-            Rectangle().fill(Color(nsColor: .separatorColor))
-                .frame(width: 1, height: height - 20).accessibilityHidden(true)
             SplitMenu(
                 label: menuLabel, side: height,
                 pointSize: NSFont.preferredFont(forTextStyle: .body).pointSize * typography.textSize.scale,
@@ -44,7 +42,8 @@ private struct SplitSegmentStyle: ButtonStyle {
         configuration.label
             .foregroundStyle(enabled ? .primary : .secondary)
             .background(
-                Color.primary.opacity(enabled ? configuration.isPressed ? 0.14 : hovering ? 0.06 : 0 : 0)
+                Color.primary.opacity(enabled ? configuration.isPressed ? 0.14 : hovering ? 0.06 : 0 : 0),
+                in: Rectangle()
             )
             .onHover { hovering = $0 }
     }

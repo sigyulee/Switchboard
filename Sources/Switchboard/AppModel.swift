@@ -334,6 +334,16 @@ import RecorderKit
         updateAudioSnapshot()
         reloadLibrary()
     }
+    func refreshMonitoring() {
+        guard !preview else { return }
+        if let device = preferredDevice, defaults.string(forKey: "monitorName") != device.name {
+            defaults.set(device.name, forKey: "monitorName")
+        }
+        guard session.active, driversReady, microphoneAllowed, !installing else { return }
+        pipeline.configureMonitoring(
+            monitorID: monitorDevice?.id,
+            callerVolume: Float(callerVolume), agentVolume: Float(agentVolume))
+    }
     private func updateAudioSnapshot() {
         var latest = pipeline.snapshot()
         // Freshness is checked by the pipeline. Its heartbeat is not visible UI state.

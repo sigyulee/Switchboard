@@ -124,50 +124,15 @@ final class SplitMenuControl: NSPopUpButton {
         didSet { if side != oldValue { invalidateIntrinsicContentSize() } }
     }
     var menuIsOpen = false
-    var hovering = false
-    private var hoverArea: NSTrackingArea?
     override var intrinsicContentSize: NSSize { NSSize(width: side, height: side) }
-
-    override func updateTrackingAreas() {
-        super.updateTrackingAreas()
-        if let hoverArea { removeTrackingArea(hoverArea) }
-        let area = NSTrackingArea(
-            rect: .zero, options: [.mouseEnteredAndExited, .activeInKeyWindow, .inVisibleRect], owner: self,
-            userInfo: nil)
-        hoverArea = area
-        addTrackingArea(area)
-    }
-    override func mouseEntered(with event: NSEvent) {
-        hovering = true
-        needsDisplay = true
-    }
-    override func mouseExited(with event: NSEvent) {
-        hovering = false
-        needsDisplay = true
-    }
-    override func becomeFirstResponder() -> Bool {
-        let result = super.becomeFirstResponder()
-        needsDisplay = true
-        return result
-    }
-    override func resignFirstResponder() -> Bool {
-        let result = super.resignFirstResponder()
-        needsDisplay = true
-        return result
-    }
+    override var alignmentRectInsets: NSEdgeInsets { NSEdgeInsets() }
 }
 
 final class SplitMenuCell: NSPopUpButtonCell {
     override func draw(withFrame frame: NSRect, in controlView: NSView) {
         guard let control = controlView as? SplitMenuControl else { return }
-        let focused = control.window?.firstResponder === control
-        let pressed = control.menuIsOpen || isHighlighted
-        let opacity: CGFloat =
-            control.isEnabled ? (pressed ? 0.14 : control.hovering || focused ? 0.06 : 0) : 0
-        let path = NSBezierPath(roundedRect: frame, xRadius: frame.height / 2, yRadius: frame.height / 2)
-        path.appendRect(NSRect(x: frame.minX, y: frame.minY, width: frame.width / 2, height: frame.height))
-        NSColor.labelColor.withAlphaComponent(opacity).setFill()
-        path.fill()
+        NSColor.separatorColor.setFill()
+        NSRect(x: frame.minX, y: frame.minY + 10, width: 1, height: max(0, frame.height - 20)).fill()
 
         let scale = frame.height / 44
         let sign: CGFloat = controlView.isFlipped ? 1 : -1

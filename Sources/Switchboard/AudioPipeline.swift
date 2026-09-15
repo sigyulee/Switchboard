@@ -32,6 +32,7 @@ final class AudioPipeline: @unchecked Sendable {
     private let work = AsyncSerialQueue(label: "com.switchboard.main.audio", qos: .userInteractive)
     private let files = AsyncSerialQueue(label: "com.switchboard.main.audio-files", qos: .utility)
     private let pendingConfiguration = Mutex<PipelineConfiguration?>(nil)
+    private let pendingMonitoring = Mutex<MonitoringConfiguration?>(nil)
     private let publication = Mutex(PipelineSnapshot())
     private let permissionWork = DispatchQueue(
         label: "com.switchboard.main.audio-permission", qos: .userInitiated)
@@ -96,6 +97,30 @@ final class AudioPipeline: @unchecked Sendable {
                 })
             else { return }
             configuration = next
+            applyConfiguration()
+        }
+    }
+
+    func configureMonitoring(monitorID: UInt32?, callerVolume: Float, agentVolume: Float) {
+        let next = MonitoringConfiguration(
+            monitorID: monitorID, callerVolume: callerVolume, agentVolume: agentVolume)
+        let schedule = pendingMonitoring.withLock { pending in
+            let schedule = pending == nil
+            pending = next
+            return schedule
+        }
+        guard schedule else { return }
+        work.submit { [self] in
+            guard
+                let next = pendingMonitoring.withLock({ pending in
+                    defer { pending = nil }
+                    return pending
+                }), var current = configuration
+            else { return }
+            current.monitorID = next.monitorID
+            current.callerVolume = next.callerVolume
+            current.agentVolume = next.agentVolume
+            configuration = current
             applyConfiguration()
         }
     }
@@ -305,6 +330,7 @@ final class AudioPipeline: @unchecked Sendable {
 
     func finishSession(durationFrames: Int64? = nil) async throws -> URL? {
         pendingConfiguration.withLock { $0 = nil }
+        pendingMonitoring.withLock { $0 = nil }
         let captured = await work.complete { [self] in
             let result = (recorder, durationFrames ?? elapsedFrame())
             recorder = nil
@@ -324,6 +350,7 @@ final class AudioPipeline: @unchecked Sendable {
 
     func shutdownRoutes() async {
         pendingConfiguration.withLock { $0 = nil }
+        pendingMonitoring.withLock { $0 = nil }
         await work.complete { [self] in releaseRoutes() }
     }
 
@@ -483,8 +510,14 @@ private struct PipelineConfiguration: Sendable {
     let callerID: UInt32?
     let agentInputID: UInt32?
     let replyID: UInt32?
-    let monitorID: UInt32?
+    var monitorID: UInt32?
     let agentTarget: AppAudioTarget?
+    var callerVolume: Float
+    var agentVolume: Float
+}
+
+private struct MonitoringConfiguration: Sendable {
+    let monitorID: UInt32?
     let callerVolume: Float
     let agentVolume: Float
 }

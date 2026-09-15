@@ -1,4 +1,5 @@
 import BridgeCore
+import CoreAudio
 import Darwin
 import Foundation
 import RecorderKit
@@ -14,6 +15,8 @@ private func require(_ condition: @autoclosure () throws -> Bool, _ message: Str
 @main @MainActor struct NavigationChecks {
     static func main() async {
         let checks: [(String, @MainActor () async throws -> Void)] = [
+            ("monitoring changes preserve discovery and remember the selected device", monitoringChanges),
+            ("monitoring fallback preserves the selected device across reconnect", monitoringReconnect),
             ("fresh installation confirms a folder before audio setup and remembers it", firstRunFolder),
             ("failed and cancelled folder choices preserve first-run state", failedFolderChoice),
             ("upgrading preserves configured and implicit save folders", existingFolderChoice),
@@ -42,6 +45,68 @@ private func require(_ condition: @autoclosure () throws -> Bool, _ message: Str
         if failures > 0 { exit(1) }
         print(
             "\(checks.count) library navigation checks passed; no audio or permission requests were started.")
+    }
+
+    private static func monitoringChanges() async throws {
+        try await withFreshModel { model, defaults, _ in
+            model.language = .english
+            let devices = monitoringDevices()
+            model.devices = devices
+            let applications = model.applications
+            model.preferredUID = "test-usb"
+            model.callerVolume = 0.35
+            model.agentVolume = 0.65
+            model.refreshMonitoring()
+            try require(
+                model.devices == devices && model.applications == applications,
+                "A monitoring edit performed full device/application discovery")
+            try require(
+                model.callerVolume == 0.35 && model.agentVolume == 0.65,
+                "Monitoring update changed independent volume values")
+            try require(
+                defaults.string(forKey: "monitorName") == "USB Headphones",
+                "Selected monitoring device name was not remembered")
+            model.preferredUID = "test-built-in"
+            model.refreshMonitoring()
+            try require(
+                defaults.string(forKey: "monitorName") == "Built-in Speakers",
+                "Monitoring device change retained the previous name")
+        }
+    }
+
+    private static func monitoringReconnect() async throws {
+        try await withFreshModel { model, _, _ in
+            model.language = .english
+            let devices = monitoringDevices()
+            model.devices = devices
+            model.preferredUID = "test-usb"
+            model.refreshMonitoring()
+            model.devices = [devices[0]]
+            model.speakerFallback = false
+            model.refreshMonitoring()
+            try require(model.monitorDevice == nil, "Fallback off enabled another output")
+            try require(model.preferredOutputName == "USB Headphones", "Disconnected device lost its name")
+            model.speakerFallback = true
+            model.refreshMonitoring()
+            try require(
+                model.monitorDevice?.uid == "test-built-in", "Fallback did not select built-in speakers")
+            try require(model.preferredUID == "test-usb", "Fallback replaced the selected device")
+            model.devices = devices
+            model.refreshMonitoring()
+            try require(
+                model.monitorDevice?.uid == "test-usb", "Reconnect did not return to the selected device")
+        }
+    }
+
+    private static func monitoringDevices() -> [AudioDevice] {
+        [
+            AudioDevice(
+                id: 901, uid: "test-built-in", name: "Built-in Speakers", input: false,
+                output: true, transport: kAudioDeviceTransportTypeBuiltIn, alive: true),
+            AudioDevice(
+                id: 902, uid: "test-usb", name: "USB Headphones", input: false,
+                output: true, transport: kAudioDeviceTransportTypeUSB, alive: true),
+        ]
     }
 
     private static func firstRunFolder() async throws {

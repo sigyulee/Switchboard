@@ -31,13 +31,13 @@ struct ListeningView: View {
                 }
             }
             if let error = model.monitorError {
-                Text(strings.error(error)).font(typography.body).foregroundStyle(.orange)
+                InlineIssueView(message: strings(.errorConnectDevice), details: strings.error(error))
             }
         }
-        .onChange(of: model.preferredUID) { model.refresh() }
-        .onChange(of: model.speakerFallback) { model.refresh() }
-        .onChange(of: model.callerVolume) { model.refresh() }
-        .onChange(of: model.agentVolume) { model.refresh() }
+        .onChange(of: model.preferredUID) { model.refreshMonitoring() }
+        .onChange(of: model.speakerFallback) { model.refreshMonitoring() }
+        .onChange(of: model.callerVolume) { model.refreshMonitoring() }
+        .onChange(of: model.agentVolume) { model.refreshMonitoring() }
     }
     private func volume(_ title: String, value: Binding<Double>) -> some View {
         VStack(alignment: .leading, spacing: 6) {

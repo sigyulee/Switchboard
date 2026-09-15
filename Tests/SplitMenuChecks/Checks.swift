@@ -1,4 +1,5 @@
 import AppKit
+import Darwin
 import SwiftUI
 
 @main @MainActor struct SplitMenuChecks {
@@ -11,28 +12,58 @@ import SwiftUI
         image.unlockFocus()
         return NSBitmapImageRep(data: image.tiffRepresentation!)!
     }
+    static func combinedControl() {
+        let host = NSHostingView(
+            rootView: SplitActionButton(
+                title: "Play", systemImage: "play.fill", menuLabel: "Source tracks", action: {}, options: []
+            ).environment(\.appTypography, AppTypography(textSize: .standard)))
+        host.frame = NSRect(origin: .zero, size: host.fittingSize)
+        let window = NSWindow(
+            contentRect: host.frame, styleMask: .borderless, backing: .buffered, defer: false)
+        window.contentView = host
+        func control(in view: NSView) -> SplitMenuControl? {
+            (view as? SplitMenuControl) ?? view.subviews.lazy.compactMap { control(in: $0) }.first
+        }
+        host.layoutSubtreeIfNeeded()
+        let deadline = Date().addingTimeInterval(1)
+        while control(in: host) == nil && Date() < deadline {
+            _ = RunLoop.main.run(mode: .default, before: Date().addingTimeInterval(0.01))
+            host.layoutSubtreeIfNeeded()
+        }
+        guard let menu = control(in: host) else { fatalError("Combined button did not create a native menu") }
+        print(
+            "Combined menu frame=\(menu.frame), bounds=\(menu.bounds), alignment=\(menu.alignmentRectInsets), side=\(menu.side)"
+        )
+        fflush(stdout)
+        precondition(
+            abs(menu.frame.width - menu.side) < 0.5,
+            "Native menu overhang shifts the highlight away from its allocated split boundary")
+    }
     static func main() {
         _ = NSApplication.shared
+        combinedControl()
         let control = SplitMenuControl(frame: NSRect(x: 0, y: 0, width: 44, height: 44), pullsDown: true)
         control.cell = SplitMenuCell(textCell: "", pullsDown: true)
         control.isBordered = false
         precondition(control.intrinsicContentSize == NSSize(width: 44, height: 44))
+        let idle = rendered(control)
+        precondition(
+            idle.colorAt(x: 0, y: idle.pixelsHigh / 2)!.alphaComponent > 0.02,
+            "The divider must occupy the first pixel at the native segment boundary")
+        precondition(
+            idle.colorAt(x: 4, y: idle.pixelsHigh / 2)!.alphaComponent < 0.02,
+            "The idle segment must not have an extra inner highlight")
         control.menuIsOpen = true
         let pressed = rendered(control)
         precondition(
-            pressed.colorAt(x: 1, y: 1)!.alphaComponent > 0.1,
-            "Inner edge must stay flat when the menu is open")
-        precondition(
-            pressed.colorAt(x: pressed.pixelsWide - 2, y: 1)!.alphaComponent < 0.02,
-            "Outer corner must stay rounded")
-        precondition(
-            pressed.colorAt(x: 4, y: pressed.pixelsHigh / 2)!.alphaComponent > 0.1,
-            "The inner segment must be filled continuously")
+            pressed.colorAt(x: 1, y: 1)!.alphaComponent < 0.02,
+            "An open dropdown must not highlight its background")
         control.menuIsOpen = false
-        control.hovering = true
-        let hover = rendered(control)
-        precondition(hover.colorAt(x: 1, y: 1)!.alphaComponent > 0.02, "Hover must cover the flat inner edge")
-        precondition(hover.colorAt(x: 1, y: 1)!.alphaComponent < pressed.colorAt(x: 1, y: 1)!.alphaComponent)
+        control.cell!.isHighlighted = true
+        let highlighted = rendered(control)
+        precondition(
+            highlighted.colorAt(x: 4, y: highlighted.pixelsHigh / 2)!.alphaComponent < 0.02,
+            "Native pressed feedback must not fill the dropdown background")
         control.isEnabled = false
         precondition(rendered(control).colorAt(x: 1, y: 1)!.alphaComponent < 0.02)
         control.isEnabled = true
@@ -71,7 +102,7 @@ import SwiftUI
         coordinator.menuDidClose(control.menu!)
         coordinator.invalidate()
         print(
-            "PASS flat inner highlight, rounded outer edge, 44pt target, disabled state, menu lifecycle, and source selection."
+            "PASS combined split boundary, divider, unhighlighted dropdown, 44pt target, disabled state, menu lifecycle, and source selection."
         )
     }
 }

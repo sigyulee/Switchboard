@@ -78,6 +78,8 @@ jobs:
         run: bash scripts/check-microphone-access.sh
       - name: Check application picker candidates
         run: bash scripts/check-application-catalog.sh
+      - name: Check split playback control
+        run: bash scripts/check-split-menu.sh
       - name: Check pipeline errors and pause ownership
         run: bash scripts/check-pipeline.sh release
       - name: Check transcript follow layout

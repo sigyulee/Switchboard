@@ -6,6 +6,8 @@ check_directory="$(mktemp -d "${TMPDIR:-/tmp}/switchboard-split-menu-check.XXXXX
 trap 'rm -rf "$check_directory"' EXIT
 xcrun swiftc -swift-version 6 -parse-as-library -target arm64-apple-macosx26.0 \
     -module-cache-path .build/split-menu-cache \
-    Sources/Switchboard/SplitMenu.swift Tests/SplitMenuChecks/Checks.swift \
+    Sources/Switchboard/SplitMenu.swift Sources/Switchboard/SplitActionButton.swift \
+    Sources/Switchboard/AppTypography.swift Sources/Switchboard/TextKey.swift Sources/Switchboard/ViewState.swift \
+    Tests/SplitMenuChecks/Checks.swift \
     -o "$check_directory/Checks"
 "$check_directory/Checks"
